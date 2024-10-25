@@ -5,6 +5,7 @@
 - Linux jumphost with nkp-cli installed
   - https://github.com/nutanixdev/nkp-quickstart
 - Nutanix Files server (PE-deployed)
+- TLS certificate and key
 
 ## Prepare environment
 1. Update sample.env with your environment variables and source the file
