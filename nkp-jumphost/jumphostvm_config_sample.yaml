@@ -1,0 +1,12 @@
+endpoint: "PC FQDN"
+user: "PC user"                  
+password: "PC password"          
+cluster_name: "PE Cluster Name"  
+subnet_name: "PE subnet"  
+name: "nkp-rocky-jumphost"
+num_vcpus_per_socket: "2"
+num_sockets: "1"
+memory_size_mib: 4096
+disk_size_mib: 122070
+#source_uri: "https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud-Base-9.4-20240609.1.x86_64.qcow2"
+image_uuid: "e0d1923e-f935-4d70-b5bb-806df13ab70e" # NKP Rocky Linux image - should already exist on PC
