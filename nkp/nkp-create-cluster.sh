@@ -12,6 +12,7 @@ nkp create cluster nutanix -c $CLUSTER_NAME \
     --control-plane-subnets $NUTANIX_SUBNET_NAME \
     --control-plane-replicas 3 \
     --worker-vm-image $NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME \
+    --ssh-public-key-file ${SSH_PUBLIC_KEY} \
     --worker-prism-element-cluster $NUTANIX_PRISM_ELEMENT_CLUSTER_NAME \
     --worker-subnets $NUTANIX_SUBNET_NAME \
     --worker-replicas 4 \

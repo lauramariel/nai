@@ -14,6 +14,7 @@ hostnamectl set-hostname <desired-hostname>
 ```
 
 ## Prepare environment
+1. Copy your ssh keys to the jumphost (or create new ones)
 1. Update sample.env with your environment variables and source the file
 
 ## Create NKP cluster
