@@ -1,5 +1,4 @@
 (WIP)
-
 ## Downloading a model
 When you download a model, in the nai-admin namespace, a kubernetes job is created that kicks off a temporary nai-model-processor container in the same namespace. This container has several environment variables set, including the model image to download (e.g. nvcr.io/nim/meta/llama-3.1-8b-instruct:1.2.2) and the API key via Kubernetes secret. This container creates the PV/PVC and mounts the volume.
 

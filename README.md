@@ -4,14 +4,20 @@
 ## Pre-requisites
 - Linux jumphost with nkp-cli installed
   - https://github.com/nutanixdev/nkp-quickstart
-- Nutanix Files server (PE-deployed)
+- Nutanix Files server (PE-deployed to support dynamic provisioning of shares)
 - TLS certificate and key
+
+## Optional - set jumphost hostname
+```
+sudo su
+hostnamectl set-hostname <desired-hostname>
+```
 
 ## Prepare environment
 1. Update sample.env with your environment variables and source the file
 
 ## Create NKP cluster
-1. Upload Ubuntu image to Prism Central for NKP cluster nodes or create it via NKP with
+1. Upload NKP Ubuntu image to Prism Central or create it via NKP Image Builder with
 
     ```
     nkp create image nutanix ubuntu-22.04 \
