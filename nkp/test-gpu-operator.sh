@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+set -ex
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod

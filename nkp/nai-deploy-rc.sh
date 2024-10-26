@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -ex
+
 tmpdir = $(shell mktemp -d)
 
 if [ -z "$NAI_CORE_VERSION" ] || [ -z "$ARTIFACTORY_USERNAME" ] || [ -z "$ARTIFACTORY_PASSWORD" ]; then \

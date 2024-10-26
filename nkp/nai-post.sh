@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -ex
+
 # Create secret for CSI driver
 kubectl create secret generic nutanix-csi-credentials-files \
 -n ntnx-system --from-literal=key=${FILES_CREDS_STRING} \

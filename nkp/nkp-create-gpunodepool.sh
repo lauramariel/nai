@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+set -ex
 nkp create nodepool nutanix \
     --cluster-name ${CLUSTER_NAME} \
     --prism-element-cluster ${NUTANIX_PRISM_ELEMENT_CLUSTER_NAME} \
