@@ -18,7 +18,7 @@ nkp create cluster nutanix -c $CLUSTER_NAME \
     --control-plane-memory ${CONTROL_PLANE_MEMORY_GIB} \
     --control-plane-vcpus ${CONTROL_PLANE_VCPUS} \
     --control-plane-cores-per-vcpu ${CONTROL_PLANE_CORES_PER_VCPU} \
-    --worker-disk-size 150 \
+    --worker-disk-size ${WORKER_DISK_SIZE_GIB} \
     --worker-memory ${WORKER_MEMORY_GIB} \
     --worker-vcpus ${WORKER_VCPUS} \
     --worker-cores-per-vcpu ${WORKER_CORES_PER_VCPU} \
