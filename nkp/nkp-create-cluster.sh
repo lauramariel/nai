@@ -26,4 +26,5 @@ nkp create cluster nutanix -c $CLUSTER_NAME \
     --worker-memory ${WORKER_MEMORY_GIB} \
     --worker-vcpus ${WORKER_VCPUS} \
     --worker-cores-per-vcpu ${WORKER_CORES_PER_VCPU} \
+    --kubernetes-version 1.29.6 \
     --self-managed

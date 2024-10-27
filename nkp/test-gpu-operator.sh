@@ -15,3 +15,6 @@ spec:
       limits:
         nvidia.com/gpu: 1
 EOF
+
+sleep 10
+kubectl logs cuda-vector-add

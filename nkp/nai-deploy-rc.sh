@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# only for internal Nutanix clusters (not HPOC)
+
 set -ex
 
 tmpdir = $(shell mktemp -d)

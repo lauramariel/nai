@@ -5,6 +5,7 @@ set -o pipefail
 
 helm repo add ntnx-charts https://nutanix.github.io/helm-releases
 helm repo update ntnx-charts
+helm pull ntnx-charts/nai-core --version=$NAI_CORE_VERSION --untar=true
 
 #NAI-core
 helm upgrade --install nai-core ntnx-charts/nai-core --version=$NAI_CORE_VERSION -n nai-system --create-namespace --wait \
@@ -13,4 +14,4 @@ helm upgrade --install nai-core ntnx-charts/nai-core --version=$NAI_CORE_VERSION
 --set imagePullSecret.credentials.password=$DOCKER_PASSWORD \
 --set naiApi.naiApiImage.tag=v1.0.0-rc2 \
 --insecure-skip-tls-verify \
--f iep-values-nkp.yaml
+-f ./nai-core/$ENVIRONMENT-values.yaml

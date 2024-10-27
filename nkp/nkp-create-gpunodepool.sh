@@ -12,6 +12,7 @@ nkp create nodepool nutanix \
     --cores-per-vcpu ${GPU_NODE_CORES_PER_VCPU} \
     --replicas ${GPU_REPLICA_COUNT} \
     --wait \
+    --verbose 4 \
     ${GPU_POOL} --dry-run -o yaml > gpu-nodepool.yaml
     
 # modify yaml file to add GPU specifications

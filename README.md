@@ -15,6 +15,13 @@ hostnamectl set-hostname <desired-hostname>
 
 ## Prepare environment
 1. Copy your ssh keys to the jumphost (or create new ones)
+1. Install `yq` (needed until NKP 2.13 when GPU switch is supported (NCN-102486))
+    ```
+    sudo su
+    wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
+    chmod +x /usr/bin/yq
+    ```
+
 1. Update sample.env with your environment variables and source the file
 
 ## Create NKP cluster
@@ -60,3 +67,16 @@ hostnamectl set-hostname <desired-hostname>
    ```
    sh nai-post.sh
    ```
+
+## Appendix
+
+### Setting up DNS and certificates before running nai-post.sh
+1. Once NAI is running find the IP of the istio ingress gateway
+
+```
+k get svc istio-ingressgateway -n istio-system
+```
+
+1. Set up a DNS record (e.g. in Route 53) pointing an FQDN to this IP
+1. Create a certificate with this DNS record (more later)
+1. Set cert and key env variables in .env
