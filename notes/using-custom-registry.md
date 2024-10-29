@@ -54,7 +54,7 @@ helm install nai-core nai-core-$NAI_CORE_VERSION.tgz --version=$NAI_CORE_VERSION
 	--set naiIepOperator.modelProcessorImage.image=registry.nutanixdemo.com/nai/nai-model-processor \
 	--set naiInferenceUi.naiUiImage.image=registry.nutanixdemo.com/nai/nai-inference-ui \
 	--set naiApi.naiApiImage.image=registry.nutanixdemo.com/nai/nai-api \
-  --set naiApi.supportedTGIImage=registry.nutanixdemo.com/nai/nai-tgi:2.3.1-825f39d \
+  	--set naiApi.supportedTGIImage=registry.nutanixdemo.com/nai/nai-tgi:2.3.1-825f39d \
 	--insecure-skip-tls-verify \
 	-f ./nai-core/nkp-values.yaml
 ```
