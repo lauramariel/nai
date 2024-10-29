@@ -3,6 +3,45 @@
 When you download a model, a kubernetes job is created that kicks off a temporary nai-model-processor container in the `nai-admin` namespace. This container pulls the nai-model-processor image from the docker registry. It has several environment variables set, including the model image to download (e.g. nvcr.io/nim/meta/llama-3.1-8b-instruct:1.2.2) and the API key via Kubernetes secret. This container creates the PV/PVC and mounts the volume.
 
 ```
+[nutanix@dm3-poc139-jumphost ~]$ k get pods
+NAME                                                        READY   STATUS              RESTARTS      AGE
+nai-e854aada-cefe-44f6-b8fe-62-model-job-g77w6              0/1     ContainerCreating   0             2s
+[nutanix@dm3-poc139-jumphost ~]$ k describe pod nai-e854aada-cefe-44f6-b8fe-62-model-job-g77w6
+.
+.
+.
+Events:
+  Type    Reason                  Age   From                     Message
+  ----    ------                  ----  ----                     -------
+  Normal  Scheduled               18s   default-scheduler        Successfully assigned nai-admin/nai-e854aada-cefe-44f6-b8fe-62-model-job-g77w6 to nkp-dm3-poc139-md-0-nn6l8-s86jq-74hcc
+  Normal  SuccessfulAttachVolume  18s   attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-f4b4d8d9-d025-4515-be80-11eb597f98a7"
+  Normal  Pulling                 7s    kubelet                  Pulling image "registry.nutanixdemo.com/nai/nai-model-processor:latest"
+  Normal  Pulled                  6s    kubelet                  Successfully pulled image "registry.nutanixdemo.com/nai/nai-model-processor:latest" in 381ms (381ms including waiting)
+  Normal  Created                 6s    kubelet                  Created container process-model-container
+  Normal  Started                 6s    kubelet                  Started container process-model-container
+```
+
+### Example pod logs
+
+#### Success
+```
+[nutanix@dm3-poc139-jumphost ~]$ k logs nai-9ab91c9c-e09b-4d08-876d-85-model-job-czkpt | head -3
+The new directory is created! - /data/model-files
+The new directory is created! - /data/hf_cache
+
+## Starting model files download from meta-llama/Meta-Llama-3.1-8B-Instruct with version 0e9e39f249a16976918f6564b8830bc894c89659
+```
+
+#### Failure - Invalid Token
+```
+[nutanix@dm3-poc139-jumphost ~]$ k logs nai-98d39610-1f25-4ddc-942a-a1-model-job-z6skh
+Token unauthorized to access Hugging Face Repo: 403 Client Error. (Request ID: Root=1-67206f34-21a588a3768f83e42c680ba3;8d92a79f-ff32-43a8-a44d-116bab3dff11)
+
+Cannot access gated repo for url https://huggingface.co/api/models/google/gemma-2-2b-it/commits/299a8560bedf22ed1c72a8a11e7dce4a7f9f51f8.
+Access to model google/gemma-2-2b-it is restricted and you are not in the authorized list. Visit https://huggingface.co/google/gemma-2-2b-it to ask for access.
+```
+
+```
 [nutanix@localhost ~]$ k get pv -n nai-admin | grep nai-admin
 pvc-3505d98b-415e-468e-ac23-9fcaf8167e9b   47Gi       RWX            Delete           Bound    nai-admin/nai-208c647e-d873-49e1-86cc-6e-pvc-claim                                     nai-nfs-storage   <unset>                          3m9s
 [nutanix@localhost ~]$ k get pvc -n nai-admin
