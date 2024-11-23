@@ -6,10 +6,10 @@ set -o pipefail
 # Installing dependencies on NKP
 # Cert-manager and Prometheus are already provided by NKP
 
-ISTIO_VERSION=1.20.8
-KNATIVE_VERSION=1.13.1
+export ISTIO_VERSION=1.20.8
+export KNATIVE_VERSION=1.13.1
 # KSERVE_VERSION=v0.13.1
-KSERVE_VERSION=v0.14.0 # Needed for NIM
+export KSERVE_VERSION=v0.14.0 # Needed for NIM
 
 ## Deploy Istio 1.20.8
 helm upgrade --install istio-base base --repo https://istio-release.storage.googleapis.com/charts --version=$ISTIO_VERSION -n istio-system --create-namespace --wait
