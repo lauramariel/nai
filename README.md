@@ -55,7 +55,7 @@ hostnamectl set-hostname <desired-hostname>
 1. Install pre-requisites
    
    ```
-   sh nai-deploy.sh
+   sh nai-prepare.sh
    ```
 
 1. Install NAI
