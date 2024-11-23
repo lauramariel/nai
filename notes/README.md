@@ -2,6 +2,23 @@
 ## Downloading a model
 When you download a model, a kubernetes job is created that kicks off a temporary nai-model-processor container in the `nai-admin` namespace. This container pulls the nai-model-processor image from the docker registry. It has several environment variables set, including the model image to download (e.g. nvcr.io/nim/meta/llama-3.1-8b-instruct:1.2.2) and the API key via Kubernetes secret. This container creates the PV/PVC and mounts the volume.
 
+### PV creation
+```
+[nutanix@dm3-poc139-jumphost ~]$ k get pv | grep pvc-2dd81b67-03ed-4865-8cfa-bb40ea4ead52
+pvc-2dd81b67-03ed-4865-8cfa-bb40ea4ead52   47Gi       RWX            Delete           Bound    nai-admin/nai-cf026fcd-a323-41fd-aa82-05-pvc-claim                                     nai-nfs-storage   <unset>                          4m44s
+```
+
+### PVC creation
+```
+[nutanix@dm3-poc139-jumphost ~]$ k get pvc | grep pvc-2dd81b67-03ed-4865-8cfa-bb40ea4ead52
+NAME                                       STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS      VOLUMEATTRIBUTESCLASS   AGE
+nai-cf026fcd-a323-41fd-aa82-05-pvc-claim   Bound    pvc-2dd81b67-03ed-4865-8cfa-bb40ea4ead52   47Gi       RWX            nai-nfs-storage   <unset>                 113s
+```
+
+This matches the share name created in Nutanix Files.
+
+![](./images/file-share-creation.png)
+
 ```
 [nutanix@dm3-poc139-jumphost ~]$ k get pods
 NAME                                                        READY   STATUS              RESTARTS      AGE
