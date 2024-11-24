@@ -8,7 +8,7 @@ ngc registry image info nvcr.io/nvidia/aiworkflows/rag-application-multiturn-cha
 ngc registry image info nvcr.io/nvidia/aiworkflows/rag-playground
 
 ## validate that you can login via docker
-docker login nvcr.io -u $oauthtoken
+docker login nvcr.io -u '$oauthtoken'
 
 docker pull nvcr.io/nim/nvidia/nv-embedqa-e5-v5:1.0.1
 docker pull nvcr.io/nim/nvidia/nv-rerankqa-mistral-4b-v3:1.0.2
