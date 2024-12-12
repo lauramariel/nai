@@ -78,5 +78,5 @@ k get svc istio-ingressgateway -n istio-system
 ```
 
 1. Set up a DNS record (e.g. in Route 53) pointing an FQDN to this IP
-1. Create a certificate with this DNS record (more later)
+1. Create a certificate with this DNS record (with ZeroSSL or Lets Encrypt)
 1. Set cert and key env variables in .env

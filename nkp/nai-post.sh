@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Create secret for CSI driver
+# Create storage class
+# Create secret for certificates
+# Patch gateway to use certificate
+
 set -ex
 
 # Create secret for CSI driver

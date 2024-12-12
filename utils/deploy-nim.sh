@@ -5,11 +5,11 @@ NGC_CLI_API_KEY=""
 
 # Create secret with NGC API key
 kubectl create secret generic ngc-secret \
-    --from-literal=NGC_API_KEY=$NGC_CLI_API_KEY \
-    --type=kubernetes.io/dockerconfigjson
+    --from-literal=NGC_API_KEY="$NGC_CLI_API_KEY" \
+    # --type=kubernetes.io/dockerconfigjson
 
 # Create PVC from storage class to request storage
-cat <<EOF | kubectl apply -f
+cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -24,7 +24,7 @@ spec:
 EOF
 
 # Apply configuration
-cat <<EOF | kubectl apply -f
+cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
 metadata:
@@ -44,6 +44,7 @@ spec:
         memory: "16Gi"
         nvidia.com/gpu: 1
     env:
+    - name: NGC_API_KEY
       valueFrom:
         secretKeyRef:
           name: ngc-secret
@@ -59,4 +60,31 @@ spec:
     - name: my-storage
       persistentVolumeClaim:
         claimName: my-pvc
+EOF
+
+# Ubuntu pod
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-pod
+spec:
+  containers:
+  - name: ubuntu-container
+    image: ubuntu:latest
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    volumeMounts:
+    - mountPath: /data
+      name: persistent-storage
+  volumes:
+  - name: persistent-storage
+    persistentVolumeClaim:
+      claimName: my-pvc
 EOF
