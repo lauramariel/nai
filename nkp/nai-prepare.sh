@@ -9,7 +9,8 @@ nkp create catalog nutanix-apps-catalog -w $NKP_WORKSPACE \
 
 # Create secret for CSI driver
 kubectl create secret generic nutanix-csi-credentials-files \
--n ntnx-system --from-literal=key=${FILES_CREDS_STRING} \
+-n ntnx-system --from-literal=key=${PE_CREDS_STRING} \
+--from-literal=files-key=${FILES_CREDS_STRING} \
 --dry-run=client -o yaml | kubectl apply -f -
 
 # Create storage class - dynamic provisioning

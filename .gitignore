@@ -1,7 +1,9 @@
 tmp
+.venv
 .env
 .DS_Store
 .terraform*
 jumphostvm_config.yaml
 *.tfstate
 *.tfstate.backup
+certs
