@@ -37,7 +37,7 @@ hostnamectl set-hostname <desired-hostname>
 1. Create NKP cluster
 
     ```
-    sh create-nkp-cluster.sh
+    sh nkp-create-cluster.sh
     ```
 1. License NKP cluster
 1. Add GPU node pool
@@ -45,18 +45,63 @@ hostnamectl set-hostname <desired-hostname>
     sh create-nkp-gpu-nodepool.sh
     ```
 1. Install GPU operator from NKP dashboard 
+
+    If the Ubuntu image did not have drivers installed, add the following to the configuration: 
+    ```
+    driver:
+        enabled: true
+    ```
+
 1. Test operator
 
     ```
     sh test-gpu-operator.sh
     ```
+## Install NAI - From NKP (requires 2.13 or higher)
+1. Install pre-requisites from catalog:
+   * Prometheus Monitoring
+   * Istio Service Mesh: 1.20.8 or later
+   * NVIDIA GPU Operator: 23.9.0 or later
+   * Knative-serving: 1.13.1 or later
+   
+1. Run prepare script
+    ```
+    sh nai-prepare.sh
+    ```
+1. Install Nutanix Enterprise AI from NKP catalog with the following configuration:
+    ```
+    imagePullSecret:
+        # Name of the image pull secret
+        name: nai-iep-secret
+        # Image registry credentials
+        credentials:
+        registry: https://index.docker.io/v1/
+        username: <username>
+        password: <password>
+        email: <email>
+    storageClassName: nai-nfs-storage
+    ```
+    Be sure to replace username, password, and e-mail with the Docker Hub credentials you were provided.
 
-## Install NAI
+1. Wait until all pods are running in nai-system namespace
+    ```
+    kubectl get pods -n nai-system
+    ```
+1. Run post steps
+    ```
+    sh nai-post.sh
+    ```
+## Install NAI - Manual Method
+1. Change directory for manual scripts
+    ```
+    cd manual
+    ```
+
 1. Install pre-requisites
    
-   ```
-   sh nai-prepare.sh
-   ```
+    ```
+    sh nai-prepare.sh
+    ```
 
 1. Install NAI
 
@@ -64,9 +109,9 @@ hostnamectl set-hostname <desired-hostname>
     sh nai-deploy.sh
     ```
 1. Post-install steps
-   ```
-   sh nai-post.sh
-   ```
+    ```
+    sh nai-post.sh
+    ```
 
 ## Appendix
 

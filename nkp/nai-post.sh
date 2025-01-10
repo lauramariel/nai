@@ -1,36 +1,5 @@
 #!/usr/bin/env bash
-# Create secret for CSI driver
-# Create storage class
-# Create secret for certificates
-# Patch gateway to use certificate
-
 set -ex
-
-# Create secret for CSI driver
-kubectl create secret generic nutanix-csi-credentials-files \
--n ntnx-system --from-literal=key=${FILES_CREDS_STRING} \
---dry-run -o yaml | kubectl apply -f -
-
-# Create storage class
-cat <<EOF | kubectl apply -f -
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-    name: nai-nfs-storage
-provisioner: csi.nutanix.com
-parameters:
-  dynamicProv: ENABLED
-  nfsServerName: $NFS_SERVER_NAME
-  nfsServer: $NFS_SERVER_FQDN
-  csi.storage.k8s.io/provisioner-secret-name: nutanix-csi-credentials-files
-  csi.storage.k8s.io/provisioner-secret-namespace: ntnx-system
-  csi.storage.k8s.io/node-publish-secret-name: nutanix-csi-credentials-files
-  csi.storage.k8s.io/node-publish-secret-namespace: ntnx-system
-  csi.storage.k8s.io/controller-expand-secret-name: nutanix-csi-credentials-files
-  csi.storage.k8s.io/controller-expand-secret-namespace: ntnx-system
-  storageType: NutanixFiles
-allowVolumeExpansion: true
-EOF
 
 # Create secret for certificates
 kubectl create secret tls -n istio-system iep-cert --cert=$CERT --key=$KEY
@@ -57,3 +26,10 @@ spec:
       mode: SIMPLE
       credentialName: iep-cert
 EOF
+
+# Patch catalog item in NKP with the endpoint URL
+kubectl patch cm nai-ui -n ${NKP_WORKSPACE} -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'
+
+# Patch configmaps NCN-104322
+kubectl patch configmap config-features -n knative-serving --patch '{"data":{"kubernetes.podspec-nodeselector":"enabled"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
+kubectl patch configmap config-autoscaler -n knative-serving --patch '{"data":{"enable-scale-to-zero":"false"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
