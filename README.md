@@ -34,6 +34,10 @@ hostnamectl set-hostname <desired-hostname>
     ```
 
 1. Set environment variable NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME to the name of this image
+1. cd to `nkp` directory
+    ```
+    cd nkp
+    ```
 1. Create NKP cluster
 
     ```
