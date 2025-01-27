@@ -1,7 +1,7 @@
 from openai import OpenAI, DefaultHttpxClient
 import streamlit as st
-import sys
 import os
+import time
 
 ASSISTANT_SVG = "assistant.svg"
 USER_SVG = "user.svg"
@@ -71,7 +71,7 @@ with st.sidebar:
         "(https://www.nutanix.com/press-releases/2024/nutanix-extends-ai-platform-to-public-cloud)"
     )
     iep_host_name = st.sidebar.text_input(
-            "Enter the Inference Endpoint URL", "https://nai.tmelab.net/api/v1/chat/completions", disabled=st.session_state.iep_host_disabled, on_change=iep_host_disable
+            "Enter the Inference Endpoint URL", disabled=st.session_state.iep_host_disabled, on_change=iep_host_disable
     )
 
     st.subheader("Endpoint Configuration")
@@ -138,6 +138,7 @@ if prompt := st.chat_input(st.session_state.chat_default, disabled=st.session_st
 
     try:
         with st.chat_message("assistant"):
+            start = time.perf_counter()
             stream = client.chat.completions.create(
                 model=st.session_state["endpoint_name"],
                 messages=[
@@ -148,7 +149,11 @@ if prompt := st.chat_input(st.session_state.chat_default, disabled=st.session_st
                 stream=True,
             )
             response = st.write_stream(stream)
+        request_time = "{:.2f}".format(time.perf_counter() - start)
         st.session_state.messages.append({"role": "assistant", "content": response})
+        st.markdown(f"Latency: {request_time} seconds")
+        print(request_time)
+
     except Exception as e:
         print(e)
         st.error("Error. Did you set Inference Endpoint host name, Endpoint name and API key correctly?")
