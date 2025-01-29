@@ -13,9 +13,5 @@ nkp create nodepool nutanix \
     --replicas ${GPU_REPLICA_COUNT} \
     --wait \
     --verbose 4 \
-    ${GPU_POOL} --dry-run -o yaml > gpu-nodepool.yaml
-    
-# modify yaml file to add GPU specifications until NCN-102486 is fixed
-yq e '(.spec.topology.workers.machineDeployments[] | select(.name == "gpu-nodepool").variables.overrides[] | select(.name == "workerConfig").value.nutanix.machineDetails) += {"gpus": [{"type": "name", "name": strenv(GPU_NAME)}]}' -i gpu-nodepool.yaml
-    
-kubectl apply -f gpu-nodepool.yaml
+    --gpu-name ${GPU_NAME} \
+    ${GPU_POOL}
