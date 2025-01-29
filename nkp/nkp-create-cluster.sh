@@ -26,7 +26,7 @@ nkp create cluster nutanix -c $CLUSTER_NAME \
     --worker-memory ${WORKER_MEMORY_GIB} \
     --worker-vcpus ${WORKER_VCPUS} \
     --worker-cores-per-vcpu ${WORKER_CORES_PER_VCPU} \
-    --kubernetes-version 1.29.6 \
+    --kubernetes-version 1.30.5 \
     --self-managed \
     # --dry-run \
     # --registry-url http://registry.nutanixdemo.com/nai \
