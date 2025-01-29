@@ -83,10 +83,16 @@ hostnamectl set-hostname <desired-hostname>
 1. Wait until all pods are running in nai-system namespace
     ```
     kubectl get pods -n nai-system
+ 
     ```
+1. Set up certificates. If using your own certificate, see the [appendix](https://github.com/lauramariel/nai/blob/main/README.md#appendix)
+   ```
+   bash nai-cert-setup.sh
+   ```
+
 1. Run post steps
     ```
-    sh nai-post.sh
+    bash nai-post.sh
     ```
 ## Install NAI - Manual Method
 1. Change directory for manual scripts
@@ -97,28 +103,28 @@ hostnamectl set-hostname <desired-hostname>
 1. Install pre-requisites
    
     ```
-    sh nai-prepare.sh
+    bash nai-prepare.sh
     ```
 
 1. Install NAI
 
     ```
-    sh nai-deploy.sh
+    bash nai-deploy.sh
     ```
 1. Post-install steps
     ```
-    sh nai-post.sh
+    bash nai-post.sh
     ```
 
 ## Appendix
 
-### Setting up DNS and certificates before running nai-post.sh
+### Setting up DNS and certificates for bringing your own cert
 1. Once NAI is running find the IP of the istio ingress gateway
 
 ```
-k get svc istio-ingressgateway -n istio-system
+kubectl get svc istio-ingressgateway -n istio-system
 ```
 
 1. Set up a DNS record (e.g. in Route 53) pointing an FQDN to this IP
 1. Create a certificate with this DNS record (with ZeroSSL or Lets Encrypt)
-1. Set cert and key env variables in .env
+1. Copy the cert and key to the workstation where you are running the scripts and take note of the paths
