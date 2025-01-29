@@ -17,7 +17,7 @@ kubectl create secret tls -n istio-system iep-cert --cert=$CERT --key=$KEY
 patch_gateway "iep-cert"
 }
 
-## Using Cert-Manager (recommended for HPOC)
+## Using Cert-Manager and provided DNS service
 use_sslip_io() {
 INGRESS_HOST=$(kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 NAI_UI_ENDPOINT="https://nai.${INGRESS_HOST}.sslip.io"
