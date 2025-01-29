@@ -72,10 +72,10 @@ hostnamectl set-hostname <desired-hostname>
         name: nai-iep-secret
         # Image registry credentials
         credentials:
-        registry: https://index.docker.io/v1/
-        username: <username>
-        password: <password>
-        email: <email>
+            registry: https://index.docker.io/v1/
+            username: <username>
+            password: <password>
+            email: <email>
     storageClassName: nai-nfs-storage
     ```
     Be sure to replace username, password, and e-mail with the Docker Hub credentials you were provided.

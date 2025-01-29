@@ -13,7 +13,7 @@ fi
 echo "Creating secret iep-cert for certificate"
 
 # Create secret for certificates
-kubectl create secret tls -n istio-system iep-cert --cert=$CERT --key=$KEY
+kubectl create secret tls -n istio-system iep-cert --cert=$CERT_PATH --key=$KEY_PATH
 patch_gateway "iep-cert"
 }
 
