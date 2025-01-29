@@ -14,14 +14,7 @@ hostnamectl set-hostname <desired-hostname>
 ```
 
 ## Prepare environment
-1. Copy your ssh keys to the jumphost (or create new ones)
-1. Install `yq` (needed until NKP 2.13 when GPU switch is supported (NCN-102486))
-    ```
-    sudo su
-    wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
-    chmod +x /usr/bin/yq
-    ```
-
+1. Copy your ssh keys to the jumphost (or create new ones). These are the keys that will enable access to the NKP nodes.
 1. Update sample.env with your environment variables and source the file
 
 ## Create NKP cluster
