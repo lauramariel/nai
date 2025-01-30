@@ -26,7 +26,7 @@ hostnamectl set-hostname <desired-hostname>
         --subnet ${NUTANIX_SUBNET_NAME} --insecure
     ```
 
-1. Set environment variable NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME to the name of this image
+1. Update environment variable NKP_UBUNTU_IMAGE to the name of this image
 1. cd to `nkp` directory
     ```
     cd nkp
@@ -39,7 +39,7 @@ hostnamectl set-hostname <desired-hostname>
 1. License NKP cluster
 1. Add GPU node pool
     ```
-    sh create-nkp-gpu-nodepool.sh
+    sh nkp-create-gpunodepool.sh
     ```
 1. Install GPU operator from NKP dashboard 
 
