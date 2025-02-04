@@ -14,5 +14,5 @@ nkp create nodepool nutanix \
     --wait \
     --verbose 4 \
     --gpu-count 1 \
-    --gpu-name ${GPU_NAME} \
+    --gpu-name "${GPU_NAME}" \
     ${GPU_POOL}
