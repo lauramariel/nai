@@ -5,10 +5,8 @@ curl -sLS https://get.arkade.dev| sudo sh
 
 ## install utils
 arkade get \
-#kubectl \
 kubectx \
 kubens \
-#helm \
 krew \
 stern
 
