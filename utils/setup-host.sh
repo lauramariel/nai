@@ -12,3 +12,6 @@ stern
 
 ## set path for arkade and krew kubectl plugin binaries
 export PATH="$HOME/.arkade/bin/:$HOME/.krew/bin:$PATH"
+
+echo "alias k=$(which kubectl)" >> $HOME/.bashrc
+echo "alias kns=$(which kubens)" >> $HOME/.bashrc
