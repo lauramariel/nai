@@ -7,3 +7,5 @@ jumphostvm_config.yaml
 *.tfstate
 *.tfstate.backup
 certs
+*.env
+sample-chatbot/local-chat.py

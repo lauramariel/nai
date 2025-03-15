@@ -16,4 +16,4 @@ helm upgrade --install nai-core ntnx-charts/nai-core --version=$NAI_CORE_VERSION
 --set imagePullSecret.credentials.password=$DOCKER_PASSWORD \
 --set naiApi.storageClassName=$NAI_API_RWX_STORAGECLASS \
 --insecure-skip-tls-verify \
--f ./nai-core/$ENVIRONMENT-values.yaml
+-f ./nai-core/values.yaml

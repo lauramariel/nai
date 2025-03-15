@@ -45,7 +45,7 @@ echo "NAI_UI_ENDPOINT is ${NAI_UI_ENDPOINT}"
 }
 
 ## Using built in self signed cert (not recommended)
-self_signed_cert() {    
+self_signed_cert() {
 # use existing cert provided by NAI
 patch_gateway "nai-self-signed-cert"
 export NAI_UI_ENDPOINT="https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}')/"
@@ -68,7 +68,7 @@ spec:
       number: 80
       protocol: HTTP
     tls:
-      httpsRedirect: true 
+      httpsRedirect: true
   - hosts:
     - '*'
     port:
@@ -93,4 +93,3 @@ case $choice in
     3) self_signed_cert ;;
     *) echo "Invalid option. Please enter 1, 2, or 3." ;;
 esac
-

@@ -1,22 +1,22 @@
 {
-  "model": "$NAI_EP",
-  "messages": [
-    {
-      "role": "user",
-      "content": [
+    "model": "$NAI_EP",
+    "messages": [
         {
-          "type": "text",
-          "text": "How many birds are in this picture?"
-        },
-        {
-          "type": "image_url",
-          "image_url": {
-            "url": "$IMAGE_URL"
-          }
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "How many birds are in this picture?"
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "$IMAGE_URL"
+                    }
+                }
+            ]
         }
-      ]
-    }
-  ],
-  "max_tokens": 1024,
-  "stream": false
+    ],
+    "max_tokens": 1024,
+    "stream": false
 }

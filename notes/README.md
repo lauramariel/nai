@@ -92,7 +92,7 @@ Mounting arguments: -t nfs nai-fs.ntnxlab.local:/pvc-96f09e5d-0a40-487a-8b02-ca1
 Output: mount.nfs: Failed to resolve server nai-fs.ntnxlab.local: Name or service not known
 ```
 
-Check the network settings to ensure the search domain is set. For example, on an AHV network, make sure the domain settings have the domain in the “Domain Search” field. 
+Check the network settings to ensure the search domain is set. For example, on an AHV network, make sure the domain settings have the domain in the “Domain Search” field.
 
 ![](./images/domain-settings-ahv-subnet.png)
 

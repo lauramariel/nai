@@ -1,4 +1,4 @@
-# Courtesy of https://github.com/jesse-gonzalez 
+# Courtesy of https://github.com/jesse-gonzalez
 
 ## install arkade to simplify installing cloud-native tools
 curl -sLS https://get.arkade.dev| sudo sh

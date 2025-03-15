@@ -46,7 +46,7 @@ spec:
       number: 80
       protocol: HTTP
     tls:
-      httpsRedirect: true 
+      httpsRedirect: true
   - hosts:
     - '*'
     port:

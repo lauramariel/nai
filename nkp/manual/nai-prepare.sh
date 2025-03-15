@@ -26,7 +26,7 @@ helm upgrade --install istio-ingressgateway gateway --repo https://istio-release
     --set containerSecurityContext.runAsGroup=0 \
     --wait
 
-## Deploy Knative 1.13.1 
+## Deploy Knative 1.13.1
 helm upgrade --install knative-serving-crds nai-knative-serving-crds --repo https://nutanix.github.io/helm-releases  --version=$KNATIVE_VERSION -n knative-serving --create-namespace --wait
 
 helm upgrade --install knative-serving nai-knative-serving --repo https://nutanix.github.io/helm-releases -n knative-serving --version=$KNATIVE_VERSION --wait

@@ -41,9 +41,9 @@ hostnamectl set-hostname <desired-hostname>
     ```
     sh nkp-create-gpunodepool.sh
     ```
-1. Install GPU operator from NKP dashboard 
+1. Install GPU operator from NKP dashboard
 
-    If the Ubuntu image did not have drivers installed, add the following to the configuration: 
+    If the Ubuntu image did not have drivers installed, add the following to the configuration:
     ```
     driver:
         enabled: true
@@ -60,7 +60,7 @@ hostnamectl set-hostname <desired-hostname>
    * Istio Service Mesh: 1.20.8 or later
    * NVIDIA GPU Operator: 23.9.0 or later
    * Knative-serving: 1.13.1 or later
-   
+
 1. Run prepare script
     ```
     sh nai-prepare.sh
@@ -83,7 +83,7 @@ hostnamectl set-hostname <desired-hostname>
 1. Wait until all pods are running in nai-system namespace
     ```
     kubectl get pods -n nai-system
- 
+
     ```
 1. Set up certificates. If using your own certificate, see the [appendix](https://github.com/lauramariel/nai/blob/main/README.md#appendix)
    ```
@@ -101,7 +101,7 @@ hostnamectl set-hostname <desired-hostname>
     ```
 
 1. Install pre-requisites
-   
+
     ```
     bash nai-prepare.sh
     ```

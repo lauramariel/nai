@@ -15,7 +15,7 @@ export PAYLOAD="{
 while :
 do
 time curl -k -X 'POST' "https://$NAI_URL/api/v1/chat/completions" \
- -H "Authorization: Bearer $NAI_KEY" \
+ -H "Authorization: Bearer $API_KEY" \
  -H 'accept: application/json' \
  -H 'Content-Type: application/json' \
  -d "$PAYLOAD"
