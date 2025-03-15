@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: streamlit-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - chat.tmelab.net  # Replace with your actual domain
+    secretName: chat-cert  # This is the existing TLS secret
+  rules:
+  - host: chat.tmelab.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: streamlit-service  # The service name
+            port:
+              number: 80

@@ -9,3 +9,8 @@ This is a real time chatbot demo that works with Nutanix Enterprise AI.
 ## Run Chatbot app
 
     streamlit run chat.py
+
+# To build docker image
+
+docker build --platform linux/amd64 -t myregistry.com/chatbot:1.0 .
+docker push myregistry.com/chatbot:1.0

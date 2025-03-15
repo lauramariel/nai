@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: st-virtualservice
+  namespace: default
+spec:
+  hosts:
+    - chat.tmelab.net  # The same domain used in the Gateway
+  gateways:
+    - istio-system/st-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: streamlit-service.default.svc.cluster.local
+            port:
+              number: 80

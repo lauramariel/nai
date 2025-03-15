@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamlit-service
+  namespace: default  # Ensure this matches your Deployment namespace
+spec:
+  selector:
+    app: streamlit  # This must match your Deployment labels
+  ports:
+    - protocol: TCP
+      port: 80      # The port your Ingress will forward traffic to
+      targetPort: 8501  # The port your Streamlit container listens on
+  type: ClusterIP  # Default type for use with Ingress
