@@ -58,7 +58,7 @@ echo "Patching gateway to use certificate"
 SECRET_NAME=$1
 
 # Patch gateway to use certificate
-kubectl patch gateway knative-ingress-gateway -n knative-serving --type merge --patch-file=/dev/stdin <<EOF
+kubectl patch gateways.networking.istio.io knative-ingress-gateway -n knative-serving --type merge --patch-file=/dev/stdin <<EOF
 spec:
   servers:
   - hosts:
