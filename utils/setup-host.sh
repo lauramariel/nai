@@ -22,3 +22,4 @@ export PATH="$HOME/.arkade/bin/:$HOME/.krew/bin:$PATH"
 
 echo "alias k=$(which kubectl)" >> $HOME/.bashrc
 echo "alias kns=$(which kubens)" >> $HOME/.bashrc
+source $HOME/.bashrc
