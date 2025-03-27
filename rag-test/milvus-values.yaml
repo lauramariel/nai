@@ -1,0 +1,36 @@
+#ATTU Frontend
+attu:
+  enabled: true
+  name: attu
+  service:
+    type: LoadBalancer
+    port: 80
+
+# Milvus Cluster settings
+cluster:
+  enabled: false
+
+etcd:
+  replicaCount: 1
+
+pulsar:
+  enabled: false
+
+service:
+  type: LoadBalancer
+
+# Disable MinIO and configuring External S3
+minio:
+  enabled: false
+
+externalS3:
+  enabled: true
+  host: "" # Nutanix Objects Instance IP
+  port: 80
+  accessKey: "" # Access Key
+  secretKey: "" # Secret Key
+  useSSL: false
+  bucketName: "docs" # Bucket Name
+  rootPath: ""
+  region: us-east-1
+  useVirtualHost: false
