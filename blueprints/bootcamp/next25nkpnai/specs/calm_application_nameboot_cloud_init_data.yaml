@@ -1,0 +1,30 @@
+|-
+#cloud-config
+hostname: @@{name}@@
+fqdn: "@@{name}@@.@@{DOMAIN}@@"
+prefer_fqdn_over_hostname: true
+manage_etc_hosts: true
+ssh_pwauth: true
+chpasswd:
+  expire: false
+  users:
+    - name: @@{CRED_SSH.username}@@
+      password: @@{SSH_PASSWORD}@@
+      type: text
+users:
+- name: @@{CRED_SSH.username}@@
+  shell: /bin/bash
+  ssh_authorized_keys:
+  - @@{CRED_SSH.public_key}@@
+  sudo: ALL=(ALL) NOPASSWD:ALL
+runcmd:
+- '[ ! -f "/etc/yum.repos.d/nutanix_rocky9.repo" ] || mv -f /etc/yum.repos.d/nutanix_rocky9.repo /etc/yum.repos.d/nutanix_rocky9.repo.disabled'
+- dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+- dnf -y install docker-ce docker-ce-cli containerd.io
+- systemctl --now enable docker
+- usermod -aG docker nutanix
+- 'curl -Lo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl'
+- chmod +x /usr/local/bin/kubectl
+- 'curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
+- 'su - nutanix -c "curl -fsSL http://10.42.194.11/workshop_staging/tradeshows/experimental/nkp-bootcamp/install-tools.sh | bash"'
+- eject
