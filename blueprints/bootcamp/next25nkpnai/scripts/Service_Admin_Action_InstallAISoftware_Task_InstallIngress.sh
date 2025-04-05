@@ -7,6 +7,6 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --set controller.allowSnippetAnnotations=true \
   --set controller.ingressClassResource.default=true \
   --set force-ssl-redirect=true \
-  --version=4.8.3
+  --version=4.8.3 \
   --wait
 kubectl --namespace ingress-nginx get services -o wide ingress-nginx-controller
