@@ -869,7 +869,7 @@ class Nutanix(Profile):
 
 
 class next25nkpnai(Blueprint):
-    """[NAI Dashboard](@@(Admin.NAI_UI_ENDPOINT)@@)
+    """[NAI Dashboard](@@{Admin.NAI_UI_ENDPOINT}@@)
     [NKP Console](@@{Admin.NKP_DASHBOARD_URL}@@)
 
     Credentials:
