@@ -13,6 +13,7 @@ from calm.dsl.runbooks import CalmEndpoint as Endpoint
 
 # Secret Variables
 
+# reads from ./.local/
 BP_CRED_CRED_SSH_KEY = read_local_file("BP_CRED_CRED_SSH_KEY")
 BP_CRED_CRED_PC_PASSWORD = read_local_file("BP_CRED_CRED_PC_PASSWORD")
 Profile_Nutanix_variable_SSH_PASSWORD = read_local_file(
@@ -28,12 +29,16 @@ Profile_Nutanix_variable_NUS_FS_API_PASSWORD = read_local_file(
 Profile_Nutanix_variable_DOCKER_PW = read_local_file(
     "Profile_Nutanix_variable_DOCKER_PW"
 )
-Profile_Nutanix_variable_NAI_NEW_PW = read_local_file(
-    "Profile_Nutanix_variable_NAI_NEW_PW"
+Profile_Nutanix_variable_NAI_NEW_ADMIN_PW = read_local_file(
+    "Profile_Nutanix_variable_NAI_NEW_ADMIN_PW"
+)
+Profile_Nutanix_variable_NAI_NEW_USER_PW = read_local_file(
+    "Profile_Nutanix_variable_NAI_NEW_USER_PW"
 )
 Profile_Nutanix_variable_NAI_DEFAULT_PW = read_local_file(
     "Profile_Nutanix_variable_NAI_DEFAULT_PW"
 )
+
 
 # Credentials
 BP_CRED_CRED_SSH = basic_cred(
@@ -836,8 +841,16 @@ class Nutanix(Profile):
         description="",
     )
 
-    NAI_NEW_PW = CalmVariable.Simple.Secret(
-        Profile_Nutanix_variable_NAI_NEW_PW,
+    NAI_NEW_USER_PW = CalmVariable.Simple.Secret(
+        Profile_Nutanix_variable_NAI_NEW_USER_PW,
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+    NAI_NEW_ADMIN_PW = CalmVariable.Simple.Secret(
+        Profile_Nutanix_variable_NAI_NEW_ADMIN_PW,
         label="",
         is_mandatory=False,
         is_hidden=False,
