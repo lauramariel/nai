@@ -41,9 +41,11 @@ krew search
 ```
 krew install images
 krew install browse-pvc
+krew install tree
+krew install get-all
 ```
 
-## Get image used by pods
+## Get images used by pods
 ```
 kubectl images
 ```
@@ -61,6 +63,20 @@ kubectl browse-pvc $PVC_NAME
 ✓ Attached to browse-nai-25913f19-f1f8-42e0-ab08-90-pvc-claim-pnh8g
 /mnt # ls
 model-files
+```
+
+## Get related objects
+```
+kubectl tree deployment 
+```
+### Example
+```
+[nutanix@localhost ~]$ k tree deploy nai-api
+NAMESPACE   NAME                                           READY  REASON  AGE
+nai-system  Deployment/nai-api                             -              25d
+nai-system  └─ReplicaSet/nai-api-57c44b98cf                -              25d
+nai-system    └─Pod/nai-api-57c44b98cf-68pjp               True           25d
+nai-system      └─CiliumEndpoint/nai-api-57c44b98cf-68pjp  -              25d
 ```
 
 ## kubens
