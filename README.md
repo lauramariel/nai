@@ -66,55 +66,55 @@ source .env
 
 1. From nkp directory, cd to `nai-2.4`
 
-```
-cd nai-2.4
-```
+    ```
+    cd nai-2.4
+    ```
 
-2. Run nai_prepare.sh
+1. Run nai_prepare.sh
 
-This will:
-- Install envoy gateway
-- Enable app catalog
-- Create secret for CSI Driver authentication
-- Create storage class
+    This will:
+    - Install envoy gateway
+    - Enable app catalog
+    - Create secret for CSI Driver authentication
+    - Create storage class
 
-```
-bash nai-prepare.sh
-```
+    ```
+    bash nai-prepare.sh
+    ```
 
 1. Enable NAI from NKP catalog with the following config:
 
-```
-imagePullSecret:
-    # Name of the image pull secret
-    name: nai-iep-secret
-    # Image registry credentials
-    credentials:
-        registry: https://index.docker.io/v1/
-        username: <username>
-        password: <password>
-        email: <email>
-storageClassName: nai-nfs-storage
-```
+    ```
+    imagePullSecret:
+        # Name of the image pull secret
+        name: nai-iep-secret
+        # Image registry credentials
+        credentials:
+            registry: https://index.docker.io/v1/
+            username: <username>
+            password: <password>
+            email: <email>
+    storageClassName: nai-nfs-storage
+    ```
 
 Be sure to replace username, password, and e-mail with the Docker Hub credentials you were provided.
 
-4. Wait until all pods are running in nai-system namespace
-```
-kubectl get pods -n nai-system
-```
+1. Wait until all pods are running in nai-system namespace
+    ```
+    kubectl get pods -n nai-system
+    ```
 
-5. Update dashboard link with FQDN or IP
+1. Update dashboard link with FQDN or IP
 
-```
-bash nai-dashboard-link.sh 'https://<FQDN>'
-```
+    ```
+    bash nai-dashboard-link.sh 'https://<FQDN>'
+    ```
 
 1. Set up certificates. See the [appendix](https://github.com/lauramariel/nai/blob/main/README.md#appendix).
 
-```
-bash nai-cert-setup.sh
-```
+    ```
+    bash nai-cert-setup.sh
+    ```
 
 ## Install NAI - Manual method
 
