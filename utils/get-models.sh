@@ -1,0 +1,1 @@
+kubectl get models -l model.iep.nai.nutanix.com/name=$MODEL -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | xargs -I{} kubectl get pvc {}-pvc-claim

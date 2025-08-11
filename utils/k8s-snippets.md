@@ -1,5 +1,10 @@
 # K8s default
 
+## Get config
+```
+kubectl config view --minify --raw
+```
+
 ## Drain all GPU nodes
 ```
 kubectl get node -l nvidia.com/gpu.present=true -o name | cut -d/ -f2 | xargs -I {} sh -c "kubectl drain {} --delete-emptydir-data --ignore-daemonsets --disable-eviction && kubectl uncordon {}"
@@ -67,7 +72,7 @@ model-files
 
 ## Get related objects
 ```
-kubectl tree deployment 
+kubectl tree deployment
 ```
 ### Example
 ```

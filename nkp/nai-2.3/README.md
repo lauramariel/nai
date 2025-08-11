@@ -1,5 +1,6 @@
 
-# Installing NAI on NKP (Updated for NAI 2.4 on NKP 2.15)
+# Installing NAI on NKP
+# NAI 2.3 and below
 
 ## Pre-requisites
 - Linux jumphost with nkp-cli installed
@@ -16,10 +17,6 @@ hostnamectl set-hostname <desired-hostname>
 ## Prepare environment
 1. Copy your ssh keys to the jumphost (or create new ones). These are the keys that will enable access to the NKP nodes.
 1. Update sample.env with your environment variables and source the file
-
-```
-source .env
-```
 
 ## Create NKP cluster
 1. Upload NKP Ubuntu image to Prism Central or create it via NKP Image Builder with
@@ -58,75 +55,75 @@ source .env
     ```
     sh test-gpu-operator.sh
     ```
-## Install NAI - From NKP
+## Install NAI - From NKP (requires 2.13 or higher)
+1. Install pre-requisites from catalog:
+   * Prometheus Monitoring
+   * Istio Service Mesh: 1.20.8 or later
+   * NVIDIA GPU Operator: 23.9.0 or later
+   * Knative-serving: 1.13.1 or later
 
-### Versions
-- NAI 2.4
-- NKP 2.15
+1. Run prepare script
+    ```
+    sh nai-prepare.sh
+    ```
+1. Install Nutanix Enterprise AI from NKP catalog with the following configuration:
+    ```
+    imagePullSecret:
+        # Name of the image pull secret
+        name: nai-iep-secret
+        # Image registry credentials
+        credentials:
+            registry: https://index.docker.io/v1/
+            username: <username>
+            password: <password>
+            email: <email>
+    storageClassName: nai-nfs-storage
+    ```
+    Be sure to replace username, password, and e-mail with the Docker Hub credentials you were provided.
 
-1. From nkp directory, cd to `nai-2.4`
+1. Wait until all pods are running in nai-system namespace
+    ```
+    kubectl get pods -n nai-system
 
-```
-cd nai-2.4
-```
+    ```
+1. Set up certificates. If using your own certificate, see the [appendix](https://github.com/lauramariel/nai/blob/main/README.md#appendix)
+   ```
+   bash nai-cert-setup.sh
+   ```
 
-2. Run nai_prepare.sh
+1. Run post steps
+    ```
+    bash nai-post.sh
+    ```
+## Install NAI - Manual Method
+1. Change directory for manual scripts
+    ```
+    cd manual
+    ```
 
-This will:
-- Install envoy gateway
-- Enable app catalog
-- Create secret for CSI Driver authentication
-- Create storage class
+1. Install pre-requisites
 
-```
-bash nai-prepare.sh
-```
+    ```
+    bash nai-prepare.sh
+    ```
 
-1. Enable NAI from NKP catalog with the following config:
+1. Install NAI
 
-```
-imagePullSecret:
-    # Name of the image pull secret
-    name: nai-iep-secret
-    # Image registry credentials
-    credentials:
-        registry: https://index.docker.io/v1/
-        username: <username>
-        password: <password>
-        email: <email>
-storageClassName: nai-nfs-storage
-```
-
-Be sure to replace username, password, and e-mail with the Docker Hub credentials you were provided.
-
-4. Wait until all pods are running in nai-system namespace
-```
-kubectl get pods -n nai-system
-```
-
-5. Update dashboard link with FQDN or IP
-
-```
-bash nai-dashboard-link.sh 'https://<FQDN>'
-```
-
-1. Set up certificates. See the [appendix](https://github.com/lauramariel/nai/blob/main/README.md#appendix).
-
-```
-bash nai-cert-setup.sh
-```
-
-## Install NAI - Manual method
-
-Coming soon
+    ```
+    bash nai-deploy.sh
+    ```
+1. Post-install steps
+    ```
+    bash nai-post.sh
+    ```
 
 ## Appendix
 
 ### Setting up DNS and certificates for bringing your own cert
-1. Once NAI is running find the IP of the ingress gateway
+1. Once NAI is running find the IP of the istio ingress gateway
 
 ```
-kubectl get gateway nai-ingress-gateway -n nai-system -o jsonpath='{.status.addresses[0].value}{"\n"}'
+kubectl get svc istio-ingressgateway -n istio-system
 ```
 
 1. Set up a DNS record (e.g. in Route 53) pointing an FQDN to this IP
