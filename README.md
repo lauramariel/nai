@@ -97,7 +97,7 @@ source .env
     storageClassName: nai-nfs-storage
     ```
 
-Be sure to replace username, password, and e-mail with the Docker Hub credentials you were provided.
+    Be sure to replace username, password, and e-mail with the Docker Hub credentials you were provided.
 
 1. Wait until all pods are running in nai-system namespace
     ```
