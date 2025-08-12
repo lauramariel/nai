@@ -58,9 +58,9 @@ hostnamectl set-hostname <desired-hostname>
 ## Install NAI - From NKP (requires 2.13 or higher)
 1. Install pre-requisites from catalog:
    * Prometheus Monitoring
-   * Istio Service Mesh: 1.20.8 or later
-   * NVIDIA GPU Operator: 23.9.0 or later
-   * Knative-serving: 1.13.1 or later
+   * Istio Service Mesh: 1.23.3
+   * NVIDIA GPU Operator: 24.9.2
+   * Knative-serving: 1.17.0
 
 1. Run prepare script
     ```
