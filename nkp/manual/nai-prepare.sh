@@ -6,12 +6,13 @@ set -o pipefail
 # Installing dependencies on NKP
 # Cert-manager and Prometheus are already provided by NKP
 
-export ISTIO_VERSION=1.20.8
-export KNATIVE_VERSION=1.13.1
+# These values are valid for NAI version 2.3
+export ISTIO_VERSION=1.23.3 
+export KNATIVE_VERSION=1.17.0
 # KSERVE_VERSION=v0.13.1
 export KSERVE_VERSION=v0.14.0 # Needed for NIM
 
-## Deploy Istio 1.20.8
+## Deploy Istio 1.23.3 
 helm upgrade --install istio-base base --repo https://istio-release.storage.googleapis.com/charts --version=$ISTIO_VERSION -n istio-system --create-namespace --wait
 
 helm upgrade --install istiod istiod --repo https://istio-release.storage.googleapis.com/charts --version=$ISTIO_VERSION -n istio-system \
@@ -26,7 +27,7 @@ helm upgrade --install istio-ingressgateway gateway --repo https://istio-release
     --set containerSecurityContext.runAsGroup=0 \
     --wait
 
-## Deploy Knative 1.13.1
+## Deploy Knative 1.17.0
 helm upgrade --install knative-serving-crds nai-knative-serving-crds --repo https://nutanix.github.io/helm-releases  --version=$KNATIVE_VERSION -n knative-serving --create-namespace --wait
 
 helm upgrade --install knative-serving nai-knative-serving --repo https://nutanix.github.io/helm-releases -n knative-serving --version=$KNATIVE_VERSION --wait
@@ -37,7 +38,7 @@ kubectl patch configmap config-features -n knative-serving --patch '{"data":{"ku
 
 kubectl patch configmap config-autoscaler -n knative-serving --patch '{"data":{"enable-scale-to-zero":"false"}}'
 
-## Deploy Kserve 0.14.1
+## Deploy Kserve 0.14.0
 helm upgrade --install kserve-crd oci://ghcr.io/kserve/charts/kserve-crd --version=$KSERVE_VERSION -n kserve --create-namespace --wait
 
 helm upgrade --install kserve oci://ghcr.io/kserve/charts/kserve --version=$KSERVE_VERSION -n kserve --wait \
