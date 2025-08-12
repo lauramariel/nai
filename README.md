@@ -113,7 +113,7 @@ source .env
 1. Set up certificates. See the [appendix](https://github.com/lauramariel/nai/blob/main/README.md#appendix).
 
     ```
-    bash nai-cert-setup.sh
+    bash nai-install-cert.sh
     ```
 
 ## Install NAI - Manual method
