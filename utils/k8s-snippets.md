@@ -23,6 +23,12 @@ kubectl get pods -o wide --field-selector spec.nodeName=$NODE_NAME -A
 kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.namespace} {.metadata.name} {.spec.containers[*].resources.requests.nvidia\.com/gpu}{"\n"}{end}' | cut -f2- -d' ' | grep ' [0-9]'
 ```
 
+## Taint nodes so only NAI endpoints can run on them
+## https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_4:top-nai-requirements-c.html
+```
+kubectl taint node $NODE_NAME nvidia.com/gpu=true:NoSchedule
+```
+
 ## Get resources requested by all deployments in given namespace
 ```
 export NS="nai-admin"
