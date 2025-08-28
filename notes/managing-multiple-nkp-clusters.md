@@ -40,6 +40,8 @@ kubie ctx
 
 This will present a list of contexts it found from the config files it found in `${HOME}/.kube`, e.g.
 
-![alt text](kubie.png)
+![alt text](images/kubie.png)
+
+enabling you to switch between them. It will spawn a new shell for each context.
 
 For more information see https://github.com/sbstp/kubie?tab=readme-ov-file#usage
