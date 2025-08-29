@@ -6,7 +6,7 @@ until kubectl get namespace istio-system &>/dev/null; do echo "Waiting for names
 # INSTANCE=flowise-user#
 for i in {1..5}
 do
-  export INSTANCE="flowise-user$i"
+  export INSTANCE="flowise-adminuser0$i"
   export INGRESS_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath="{.status.loadBalancer.ingress[].ip}" && echo)
   export SSLIP_HOSTNAME="${INSTANCE}-${INGRESS_IP//./-}.sslip.nutanixdemo.com"
 
@@ -27,7 +27,7 @@ do
     --set ingress.ingressClassName="nginx" \
     --set ingress.hosts[0].host="${SSLIP_HOSTNAME}" \
     --set ingress.hosts[0].paths[0]="/" \
-    --set ingress.tls[0].secretName="iep-cert" \
+    --set ingress.tls[0].secretName="nai-cert" \
     --set ingress.tls[0].hosts[0]="${SSLIP_HOSTNAME}" \
     --wait
  done

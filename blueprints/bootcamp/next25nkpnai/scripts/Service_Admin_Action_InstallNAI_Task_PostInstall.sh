@@ -1,8 +1,8 @@
 source ~/.env
 
-INGRESS_HOST=$(kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-NAI_UI_ENDPOINT="https://${INGRESS_HOST//./-}.sslip.nutanixdemo.com"
-echo "Creating secret iep-cert for certificate"
+ISTIO_INGRESS_HOST=$(kubectl get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+NAI_UI_ENDPOINT="https://${ISTIO_INGRESS_HOST//./-}.sslip.nutanixdemo.com"
+NAI_UI_HOSTNAME="${ISTIO_INGRESS_HOST//./-}.sslip.nutanixdemo.com"
 # Create secret for certificates
 
 # get certs
@@ -13,6 +13,7 @@ wget -O $HOME/certs/privkey1.pem http://10.55.251.38/workshop_staging/tradeshows
 CERT_PATH="$HOME/certs/fullchain1.pem"
 KEY_PATH="$HOME/certs/privkey1.pem"
 CERT_NAME="nai-cert"
+echo "Creating secret $CERT_NAME for certificate"
 kubectl create secret tls -n istio-system $CERT_NAME --cert=$CERT_PATH --key=$KEY_PATH
 
 kubectl patch configmap config-features -n knative-serving --patch '{"data":{"kubernetes.podspec-nodeselector":"enabled"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
@@ -23,7 +24,7 @@ kubectl patch gateways.networking.istio.io knative-ingress-gateway -n knative-se
 spec:
   servers:
   - hosts:
-    - '*'
+    - $NAI_UI_HOSTNAME
     port:
       name: http
       number: 80
@@ -31,7 +32,7 @@ spec:
     tls:
       httpsRedirect: true
   - hosts:
-    - '*'
+    - $NAI_UI_HOSTNAME
     port:
       name: https
       number: 443

@@ -45,9 +45,6 @@ export NUS_FS_API_PASSWORD=@@{NUS_FS_API_PASSWORD}@@
 export FILES_CREDS_STRING="@@{NUS_FS_NAME}@@.ntnxlab.local:@@{NUS_FS_API_USER}@@:@@{NUS_FS_API_PASSWORD}@@"
 # NAI
 export NAI_CORE_VERSION="@@{NAI_CORE_VERSION}@@"
-export DOCKER_USERNAME="@@{DOCKER_USERNAME}@@"
-export DOCKER_PASSWORD="@@{DOCKER_PW}@@"
-export DOCKER_EMAIL="@@{DOCKER_EMAIL}@@"
 export NKP_WORKSPACE=kommander-workspace
 export NKP_NAMESPACE=kommander
 EOF

@@ -10,3 +10,4 @@ certs
 gts.env
 sample-chatbot/local-chat.py
 temp
+.local

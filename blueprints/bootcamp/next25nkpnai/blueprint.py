@@ -13,7 +13,6 @@ from calm.dsl.runbooks import CalmEndpoint as Endpoint
 
 # Secret Variables
 
-# reads from ./.local/
 BP_CRED_CRED_SSH_KEY = read_local_file("BP_CRED_CRED_SSH_KEY")
 BP_CRED_CRED_PC_PASSWORD = read_local_file("BP_CRED_CRED_PC_PASSWORD")
 Profile_Nutanix_variable_SSH_PASSWORD = read_local_file(
@@ -26,19 +25,15 @@ Profile_Nutanix_variable_BINDPW = read_local_file("Profile_Nutanix_variable_BIND
 Profile_Nutanix_variable_NUS_FS_API_PASSWORD = read_local_file(
     "Profile_Nutanix_variable_NUS_FS_API_PASSWORD"
 )
-Profile_Nutanix_variable_DOCKER_PW = read_local_file(
-    "Profile_Nutanix_variable_DOCKER_PW"
-)
-Profile_Nutanix_variable_NAI_NEW_ADMIN_PW = read_local_file(
-    "Profile_Nutanix_variable_NAI_NEW_ADMIN_PW"
-)
 Profile_Nutanix_variable_NAI_NEW_USER_PW = read_local_file(
     "Profile_Nutanix_variable_NAI_NEW_USER_PW"
 )
 Profile_Nutanix_variable_NAI_DEFAULT_PW = read_local_file(
     "Profile_Nutanix_variable_NAI_DEFAULT_PW"
 )
-
+Profile_Nutanix_variable_NAI_NEW_ADMIN_PW = read_local_file(
+    "Profile_Nutanix_variable_NAI_NEW_ADMIN_PW"
+)
 
 # Credentials
 BP_CRED_CRED_SSH = basic_cred(
@@ -55,23 +50,6 @@ BP_CRED_CRED_PC = basic_cred(
     name="CRED_PC",
     type="PASSWORD",
     editables={"username": False, "secret": True},
-)
-
-
-NKP_213_ROCKY_95 = vm_disk_package(
-    name="NKP_213_ROCKY_95",
-    description="",
-    config={
-        "name": "NKP_213_ROCKY_95",
-        "image": {
-            "name": "nkp-rocky-9.5-release-1.30.5-20241125163629.qcow2",
-            "type": "DISK_IMAGE",
-            "source": "http://10.42.194.11/workshop_staging/tradeshows/os_builds/kubernetes/nkp/nkp-rocky-9.5-release-1.30.5-20241125163629.qcow2",
-            "architecture": "X86_64",
-        },
-        "product": {"name": "NKP_213_ROCKY_95", "version": "1.0"},
-        "checksum": {},
-    },
 )
 
 
@@ -98,11 +76,39 @@ class Admin(Service):
         "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
     )
 
+    ISTIO_INGRESS_HOST = CalmVariable.Simple(
+        "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
+    )
+
+    NGINX_INGRESS_HOST = CalmVariable.Simple(
+        "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
+    )
+
+    NUS_OBJ_INSTANCE_IP_ADDRESS = CalmVariable.Simple(
+        "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
+    )
+
+    SHARED_OBJECTS_ACCESS_KEY = CalmVariable.Simple(
+        "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
+    )
+
+    SHARED_OBJECTS_SECRET_KEY = CalmVariable.Simple(
+        "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
+    )
+
+    OBJECTS_URL = CalmVariable.Simple(
+        "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
+    )
+
     @action
     def __delete__(type="system"):
         """System action for deleting an application. Deletes created VMs as well"""
 
-        Admin.NkpDeleteClusters(name="Delete NKP clusters")
+        with parallel() as p0:
+            with branch(p0):
+                Admin.NkpDeleteClusters(name="Delete NKP clusters")
+            with branch(p0):
+                Admin.CleanupObjects(name="Cleanup Objects")
 
     @action
     def InstallDeps():
@@ -289,24 +295,24 @@ class Admin(Service):
     @action
     def PackageInstall():
 
-        with parallel() as p0:
-            with branch(p0):
-                Admin.InstallDeps(name="Install NKP dependencies")
+        Admin.InstallTools(name="Install Tools")
 
-                Admin.ConfigureFiles(name="Configure Files for StorageClass")
+        Admin.InstallDeps(name="Install NKP dependencies")
 
-                Admin.InstallNkpCluster(name="Install NKP management cluster")
+        Admin.ConfigureFiles(name="Configure Files for StorageClass")
 
-                Admin.ConfigureNkpCluster(name="Configure NKP cluster")
-                with parallel() as p4:
-                    with branch(p4):
-                        Admin.InstallNAI(name="InstallNAI")
+        Admin.InstallNkpCluster(name="Install NKP management cluster")
 
-                        Admin.InstallAISoftware(name="InstallAISoftware")
-                    with branch(p4):
-                        Admin.GetDashboardAccess(name="NKP dashboard access details")
-            with branch(p0):
-                Admin.InstallTools(name="Install Tools")
+        Admin.ConfigureNkpCluster(name="Configure NKP cluster")
+        with parallel() as p5:
+            with branch(p5):
+                Admin.InstallNAI(name="InstallNAI")
+
+                Admin.ConfigureObjects(name="Configure Objects")
+
+                Admin.InstallAISoftware(name="InstallAISoftware")
+            with branch(p5):
+                Admin.GetDashboardAccess(name="NKP dashboard access details")
 
     @action
     def NkpDeleteClusters():
@@ -389,10 +395,39 @@ class Admin(Service):
         )
 
         CalmTask.Exec.ssh(
-            name="Install Langfuse",
+            name="Install Milvus",
             filename=os.path.join(
                 "scripts",
-                "Service_Admin_Action_InstallAISoftware_Task_InstallLangfuse.sh",
+                "Service_Admin_Action_InstallAISoftware_Task_InstallMilvus.sh",
+            ),
+            target=ref(Admin),
+        )
+
+    @action
+    def ConfigureObjects():
+
+        CalmTask.SetVariable.escript.py3(
+            name="Create Buckets and Shared Access Key",
+            filename=os.path.join(
+                "scripts",
+                "Service_Admin_Action_ConfigureObjects_Task_CreateBucketsandSharedAccessKey.py",
+            ),
+            target=ref(Admin),
+            variables=[
+                "SHARED_OBJECTS_ACCESS_KEY",
+                "SHARED_OBJECTS_SECRET_KEY",
+                "NUS_OBJ_INSTANCE_IP_ADDRESS",
+                "OBJECTS_URL",
+            ],
+        )
+
+    @action
+    def CleanupObjects():
+
+        CalmTask.Exec.escript.py3(
+            name="Cleanup Objects",
+            filename=os.path.join(
+                "scripts", "Service_Admin_Action_CleanupObjects_Task_CleanupObjects.py"
             ),
             target=ref(Admin),
         )
@@ -403,12 +438,8 @@ class calm_application_namebootResources(AhvVmResources):
     memory = 8
     vCPUs = 4
     cores_per_vCPU = 1
-    disks = [
-        AhvVmDisk.Disk.Scsi.cloneFromImageService(
-            "nkp-rocky-9.5-release-1.31.4-20250214003015.qcow2", bootable=True
-        )
-    ]
-    nics = [AhvVmNic.NormalNic.ingress("primary", cluster="PHX-POC256")]
+    disks = [AhvVmDisk.Disk.Scsi.cloneFromImageService("", bootable=True)]
+    nics = [AhvVmNic.NormalNic.ingress("Default", cluster="Dev")]
 
     guest_customization = AhvVmGC.CloudInit(
         filename=os.path.join("specs", "calm_application_nameboot_cloud_init_data.yaml")
@@ -421,7 +452,7 @@ class calm_application_nameboot(AhvVm):
 
     name = "@@{calm_application_name}@@-boot"
     resources = calm_application_namebootResources
-    cluster = Ref.Cluster(name="PHX-POC256")
+    cluster = Ref.Cluster(name="Dev")
 
 
 class Admin_Substrate(Substrate):
@@ -565,7 +596,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_USERS_ENDS = CalmVariable.Simple(
-        "10.38.35.58",
+        "10.38.26.58",
         label="External IPs for users LB services",
         is_mandatory=True,
         is_hidden=False,
@@ -574,7 +605,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_USERS_STARTS = CalmVariable.Simple(
-        "10.38.35.39",
+        "10.38.26.39",
         label="External IPs for users LB services",
         is_mandatory=True,
         is_hidden=False,
@@ -583,7 +614,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_ENDS = CalmVariable.Simple(
-        "10.38.35.16",
+        "10.38.26.16",
         label="NKP Apps VIP for MetalLB",
         is_mandatory=True,
         is_hidden=False,
@@ -592,7 +623,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_STARTS = CalmVariable.Simple(
-        "10.38.35.16",
+        "10.38.26.16",
         label="NKP Apps VIP for MetalLB",
         is_mandatory=True,
         is_hidden=False,
@@ -601,7 +632,7 @@ class Nutanix(Profile):
     )
 
     CONTROL_PLANE_VIP_ADDRESS = CalmVariable.Simple(
-        "10.38.35.15",
+        "10.38.26.15",
         label="Control Plane VIP address",
         is_mandatory=True,
         is_hidden=False,
@@ -637,7 +668,7 @@ class Nutanix(Profile):
     )
 
     LDAP_HOST = CalmVariable.Simple(
-        "10.38.35.6",
+        "10.38.26.6",
         label="LDAP Host",
         is_mandatory=True,
         is_hidden=False,
@@ -714,7 +745,7 @@ class Nutanix(Profile):
     )
 
     PC_ADDRESS = CalmVariable.Simple(
-        "10.38.35.7",
+        "10.38.26.7",
         label="Prism Central IP address",
         is_mandatory=True,
         is_hidden=False,
@@ -743,7 +774,7 @@ class Nutanix(Profile):
     )
 
     PRISM_ELEMENT_CLUSTER_NAME = CalmVariable.Simple(
-        "PHX-POC263",
+        "PHX-POC256",
         label="Prism Element cluster name",
         is_mandatory=True,
         is_hidden=False,
@@ -752,7 +783,7 @@ class Nutanix(Profile):
     )
 
     PE_VIP_ADDRESS = CalmVariable.Simple(
-        "10.38.35.37",
+        "10.38.26.37",
         label="Prism Element cluster IP",
         is_mandatory=True,
         is_hidden=False,
@@ -805,35 +836,8 @@ class Nutanix(Profile):
         description="",
     )
 
-    DOCKER_PW = CalmVariable.Simple.Secret(
-        Profile_Nutanix_variable_DOCKER_PW,
-        label="",
-        is_mandatory=False,
-        is_hidden=False,
-        runtime=False,
-        description="",
-    )
-
-    DOCKER_USERNAME = CalmVariable.Simple(
-        "ntnxsvcgpt",
-        label="",
-        is_mandatory=False,
-        is_hidden=False,
-        runtime=False,
-        description="",
-    )
-
-    DOCKER_EMAIL = CalmVariable.Simple(
-        "laura@nutanix.com",
-        label="",
-        is_mandatory=False,
-        is_hidden=False,
-        runtime=False,
-        description="",
-    )
-
     HF_TOKEN = CalmVariable.Simple(
-        "asdf",
+        "",
         label="",
         is_mandatory=False,
         is_hidden=False,
@@ -843,14 +847,6 @@ class Nutanix(Profile):
 
     NAI_NEW_USER_PW = CalmVariable.Simple.Secret(
         Profile_Nutanix_variable_NAI_NEW_USER_PW,
-        label="",
-        is_mandatory=False,
-        is_hidden=False,
-        runtime=False,
-        description="",
-    )
-    NAI_NEW_ADMIN_PW = CalmVariable.Simple.Secret(
-        Profile_Nutanix_variable_NAI_NEW_ADMIN_PW,
         label="",
         is_mandatory=False,
         is_hidden=False,
@@ -867,20 +863,41 @@ class Nutanix(Profile):
         description="",
     )
 
+    NAI_NEW_ADMIN_PW = CalmVariable.Simple.Secret(
+        Profile_Nutanix_variable_NAI_NEW_ADMIN_PW,
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
 
-class next25nkpnai(Blueprint):
+    NUS_OBJ_NAME = CalmVariable.Simple(
+        "objects",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+
+class next25nkpnaioriginal(Blueprint):
     """[NAI Dashboard](@@{Admin.NAI_UI_ENDPOINT}@@)
-    [NKP Console](@@{Admin.NKP_DASHBOARD_URL}@@)
 
-    Credentials:
-     - username: @@{Admin.NKP_DASHBOARD_USERNAME}@@
-     - password: @@{Admin.NKP_DASHBOARD_PASSWORD}@@
-
-    **NOTE**: It is recommended to configure an identity provider on first login and rotate the dashboard password afterwards ([more info](https://docs.d2iq.com/dkp/@@{DKP_DOC_VERSION}@@/pre-provisioned-verify-install-and-log-in-to-ui#id-(@@{DKP_DOC_VERSION}@@)Pre-provisioned:VerifyInstallandLogintoUI-LogintotheUI))
+    Objects Info:
+    - Objects Browser: @@{Admin.OBJECTS_URL}@@
+    - Access Key: @@{Admin.SHARED_OBJECTS_ACCESS_KEY}@@
+    - Secret Key: @@{Admin.SHARED_OBJECTS_SECRET_KEY}@@
     """
 
     services = [Admin]
-    packages = [Admin_Package, NKP_213_ROCKY_95]
+    packages = [Admin_Package]
     substrates = [Admin_Substrate]
     profiles = [Nutanix]
     credentials = [BP_CRED_CRED_SSH, BP_CRED_CRED_PC]
+
+
+class BpMetadata(Metadata):
+
+    project = Ref.Project("IaaS")

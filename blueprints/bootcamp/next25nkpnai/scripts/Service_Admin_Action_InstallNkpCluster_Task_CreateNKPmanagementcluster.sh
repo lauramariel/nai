@@ -11,7 +11,8 @@ time nkp create cluster nutanix -c $CLUSTER_NAME \
 --control-plane-replicas 1 \
 --control-plane-vcpus 8 \
 --control-plane-memory 32 \
---worker-vcpus 16 \
+--worker-replicas 6 \
+--worker-vcpus 32 \
 --worker-memory 64 \
 --vm-image $NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME \
 --kubernetes-service-load-balancer-ip-range $MGMT_LB_IP_RANGE_STARTS-$MGMT_LB_IP_RANGE_ENDS \
