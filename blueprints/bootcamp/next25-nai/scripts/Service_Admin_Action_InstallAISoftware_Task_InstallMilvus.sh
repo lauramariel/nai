@@ -130,7 +130,7 @@ do
 
     # Install
     helm upgrade --cleanup-on-fail \
-        --install milvus-vectordb milvus/milvus \
+        --install milvus-vectordb milvus/milvus --version 4.2.44 \
         --set image.tag="2.5.8" \
         --namespace ${INSTANCE} \
         --create-namespace \

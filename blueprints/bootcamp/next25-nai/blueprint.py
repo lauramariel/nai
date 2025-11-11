@@ -7,7 +7,6 @@ Generated blueprint DSL (.py)
 import json  # no_qa
 import os  # no_qa
 
-from calm.dsl.builtins import CalmTask as CalmVarTask
 from calm.dsl.builtins import *  # no_qa
 from calm.dsl.runbooks import CalmEndpoint as Endpoint
 
@@ -25,6 +24,7 @@ Profile_Nutanix_variable_BINDPW = read_local_file("Profile_Nutanix_variable_BIND
 Profile_Nutanix_variable_NUS_FS_API_PASSWORD = read_local_file(
     "Profile_Nutanix_variable_NUS_FS_API_PASSWORD"
 )
+Profile_Nutanix_variable_HF_TOKEN = read_local_file("Profile_Nutanix_variable_HF_TOKEN")
 Profile_Nutanix_variable_NAI_NEW_USER_PW = read_local_file(
     "Profile_Nutanix_variable_NAI_NEW_USER_PW"
 )
@@ -101,7 +101,7 @@ class Admin(Service):
     )
 
     @action
-    def __delete__(type="system"):
+    def __delete__():
         """System action for deleting an application. Deletes created VMs as well"""
 
         with parallel() as p0:
@@ -438,8 +438,12 @@ class calm_application_namebootResources(AhvVmResources):
     memory = 8
     vCPUs = 4
     cores_per_vCPU = 1
-    disks = [AhvVmDisk.Disk.Scsi.cloneFromImageService("", bootable=True)]
-    nics = [AhvVmNic.NormalNic.ingress("Default", cluster="Dev")]
+    disks = [
+        AhvVmDisk.Disk.Scsi.cloneFromImageService(
+            "nkp-rocky-9.5-release-1.31.4-20250214003015.qcow2", bootable=True
+        )
+    ]
+    nics = [AhvVmNic.NormalNic.ingress("primary", cluster="DM3-POC086")]
 
     guest_customization = AhvVmGC.CloudInit(
         filename=os.path.join("specs", "calm_application_nameboot_cloud_init_data.yaml")
@@ -452,7 +456,7 @@ class calm_application_nameboot(AhvVm):
 
     name = "@@{calm_application_name}@@-boot"
     resources = calm_application_namebootResources
-    cluster = Ref.Cluster(name="Dev")
+    cluster = Ref.Cluster(name="DM3-POC086")
 
 
 class Admin_Substrate(Substrate):
@@ -485,7 +489,7 @@ class Admin_Package(Package):
     services = [ref(Admin)]
 
     @action
-    def __install__(type="system"):
+    def __install__():
 
         Admin.PackageInstall(name="Package Install")
 
@@ -522,7 +526,7 @@ class Nutanix(Profile):
     )
 
     CSI_FILE_SERVER_NAME = CalmVariable.Simple(
-        "dummy",
+        "unused",
         label="Files instance name for CSI",
         is_mandatory=False,
         is_hidden=True,
@@ -550,7 +554,7 @@ class Nutanix(Profile):
     )
 
     CONTAINER_REGISTRY_MIRROR = CalmVariable.Simple(
-        "registry.nutanixdemo.com/docker.io",
+        "registry.nutanixdemo.com/bootcamps",
         label="Registry mirror",
         is_mandatory=False,
         is_hidden=True,
@@ -582,7 +586,7 @@ class Nutanix(Profile):
         label="NKP license key",
         is_mandatory=False,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
@@ -596,56 +600,56 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_USERS_ENDS = CalmVariable.Simple(
-        "10.38.26.58",
+        "10.55.86.48",
         label="External IPs for users LB services",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
     MGMT_LB_IP_RANGE_USERS_STARTS = CalmVariable.Simple(
-        "10.38.26.39",
+        "10.55.86.39",
         label="External IPs for users LB services",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
     MGMT_LB_IP_RANGE_ENDS = CalmVariable.Simple(
-        "10.38.26.16",
+        "10.55.86.16",
         label="NKP Apps VIP for MetalLB",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
     MGMT_LB_IP_RANGE_STARTS = CalmVariable.Simple(
-        "10.38.26.16",
+        "10.55.86.16",
         label="NKP Apps VIP for MetalLB",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
     CONTROL_PLANE_VIP_ADDRESS = CalmVariable.Simple(
-        "10.38.26.15",
+        "10.55.86.15",
         label="Control Plane VIP address",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
     NKP_BINARY_URL = CalmVariable.Simple(
-        "http://10.42.194.11/workshop_staging/tradeshows/software/nutanix/kubernetes/nkp/nkp_v2.14.0_linux_amd64.tar.gz",
+        "http://10.55.92.18/vx-images/nkp_v2.14.0_linux_amd64.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=b8fsjfd4yc1pGFsZw0LX4jrZU6D_1A4K%2F20251106%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251106T185853Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=64eabde60c0f631364a73cd073cfd357e98f51ad06f88f84bc6f11764647575c",
         label="URL for NKP CLI tarball",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
@@ -663,16 +667,16 @@ class Nutanix(Profile):
         label="LDAP Bind User Password",
         is_mandatory=False,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
     LDAP_HOST = CalmVariable.Simple(
-        "10.38.26.6",
+        "10.55.86.6",
         label="LDAP Host",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
@@ -745,11 +749,11 @@ class Nutanix(Profile):
     )
 
     PC_ADDRESS = CalmVariable.Simple(
-        "10.38.26.7",
+        "10.55.86.7",
         label="Prism Central IP address",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
@@ -774,20 +778,20 @@ class Nutanix(Profile):
     )
 
     PRISM_ELEMENT_CLUSTER_NAME = CalmVariable.Simple(
-        "PHX-POC256",
+        "DM3-POC086",
         label="Prism Element cluster name",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
     PE_VIP_ADDRESS = CalmVariable.Simple(
-        "10.38.26.37",
+        "10.55.86.37",
         label="Prism Element cluster IP",
         is_mandatory=True,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
@@ -805,7 +809,7 @@ class Nutanix(Profile):
         label="Files API password",
         is_mandatory=False,
         is_hidden=False,
-        runtime=True,
+        runtime=False,
         description="",
     )
 
@@ -836,8 +840,8 @@ class Nutanix(Profile):
         description="",
     )
 
-    HF_TOKEN = CalmVariable.Simple(
-        "",
+    HF_TOKEN = CalmVariable.Simple.Secret(
+        Profile_Nutanix_variable_HF_TOKEN,
         label="",
         is_mandatory=False,
         is_hidden=False,
@@ -882,7 +886,7 @@ class Nutanix(Profile):
     )
 
 
-class next25nkpnaioriginal(Blueprint):
+class next25nai(Blueprint):
     """[NAI Dashboard](@@{Admin.NAI_UI_ENDPOINT}@@)
 
     Objects Info:
@@ -900,4 +904,4 @@ class next25nkpnaioriginal(Blueprint):
 
 class BpMetadata(Metadata):
 
-    project = Ref.Project("IaaS")
+    project = Ref.Project("NTNX")
