@@ -1,0 +1,27 @@
+imagePullSecret:
+  credentials:
+    registry: $IMAGE_REGISTRY_URL
+naiRedis:
+  naiRedisImage:
+    name: $IMAGE_REGISTRY_URL/nai/nutanix/nai-redis
+naiJobs:
+  naiJobsImage:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-jobs
+nai-clickhouse-operator:
+  operator:
+    image:
+      registry: $IMAGE_REGISTRY_URL/nai/nutanix
+      repository: nai-clickhouse-operator
+  metrics:
+    image:
+      registry: $IMAGE_REGISTRY_URL/nai/nutanix
+      repository: nai-clickhouse-metrics-exporter
+ai-gateway-helm:
+  extProc:
+    image:
+      repository: $IMAGE_REGISTRY_URL/nai/nutanix/nai-ai-gateway-extproc
+      tag: c4f26a8
+  controller:
+    image:
+      repository: $IMAGE_REGISTRY_URL/nai/nutanix/nai-ai-gateway-controller
+      tag: c4f26a8

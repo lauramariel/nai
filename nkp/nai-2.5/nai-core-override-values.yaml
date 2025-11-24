@@ -1,0 +1,71 @@
+imagePullSecret:
+  credentials:
+    registry: $IMAGE_REGISTRY_URL
+naiIepOperator:
+  iepOperatorImage:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-iep-operator
+  modelProcessorImage:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-model-processor
+naiInferenceUi:
+  naiUiImage:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-inference-ui
+naiJobs:
+  naiJobsImage:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-jobs
+naiApi:
+  naiApiImage:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-api
+  logger:
+    logLevel: debug
+  supportedTGIImage: $IMAGE_REGISTRY_URL/nai/nutanix/nai-tgi
+  supportedKserveRuntimeImage: $IMAGE_REGISTRY_URL/nai/nutanix/nai-kserve-huggingfaceserver
+  supportedVLLMImage: $IMAGE_REGISTRY_URL/nai/nutanix/nai-vllm
+  supportedKserveCustomModelServerRuntimeImage: $IMAGE_REGISTRY_URL/nai/nutanix/nai-kserve-custom-model-server
+naiIam:
+  iamProxy:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-iam-proxy
+  iamProxyControlPlane:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-iam-proxy-control-plane
+  iamUi:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-iam-ui
+  iamUserAuthn:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-iam-user-authn
+  iamThemis:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-iam-themis
+  iamThemisBootstrap:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-iam-bootstrap
+naiLabs:
+  labsImage:
+    image: $IMAGE_REGISTRY_URL/nai/nutanix/nai-rag-app
+nai-clickhouse-keeper:
+  clickhouseKeeper:
+    image:
+      registry: docker.io/nutanixstg
+      repository: nai-clickhouse-keeper
+oauth2-proxy:
+  image:
+    repository: "$IMAGE_REGISTRY_URL/nai/nutanix/nai-oauth2-proxy"
+nai-clickhouse-server:
+  clickhouse:
+    image:
+      registry: $IMAGE_REGISTRY_URL/nai/nutanix
+      repository: nai-clickhouse-server
+    initContainers:
+      addUdf:
+        image:
+          registry: $IMAGE_REGISTRY_URL/nai/nutanix
+          repository: nai-clickhouse-udf
+      waitForKeeper:
+        image:
+          registry: $IMAGE_REGISTRY_URL/nai/nutanix
+          repository: nai-jobs
+nai-clickhouse-schemas:
+  image:
+    registry: $IMAGE_REGISTRY_URL/nai/nutanix
+    repository: nai-clickhouse-schemas
+naiMonitoring:
+  opentelemetry:
+    collectorImage: $IMAGE_REGISTRY_URL/nai/nutanix/nai-opentelemetry-collector-contrib:0.136.0
+    targetAllocator:
+      image:
+        repository: $IMAGE_REGISTRY_URL/nai/nutanix/nai-target-allocator
