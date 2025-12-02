@@ -1,5 +1,7 @@
 #!/bin/bash
 # Uses unsupported v1 APIs, do not use in production.
+# Tested with NAI 2.2
+
 export NAI_DEFAULT_PW="@@{NAI_DEFAULT_PW}@@"
 export NAI_NEW_ADMIN_PW="@@{NAI_NEW_ADMIN_PW}@@"
 export NAI_NEW_USER_PW="@@{NAI_NEW_USER_PW}@@"
@@ -76,4 +78,33 @@ EOF
 echo -e "\nCreating user $USER_NAI_NAME"
 curl $CURL_OPTS -X POST "$NAI_UI_ENDPOINT/api/v1/users" -H 'Content-Type: application/json' -H "Authorization: $JWT_TOKEN" -d $PAYLOAD
 sleep 1
+done
+
+sleep 1
+
+# Reset default pw for users and set HF token
+for USER_NAI_NAME in "${USERS[@]}"
+do
+# Initial login to set token
+echo -e "Initial login with default password to set JWT token"
+PAYLOAD=$(cat <<EOF
+{"username":"$USER_NAI_NAME","password":"$NAI_DEFAULT_PW"}
+EOF
+)
+JWT_TOKEN=$(curl "$CURL_OPTS" -X POST "$NAI_UI_ENDPOINT/api/v1/login/local" -H 'Content-Type: application/json' -d $PAYLOAD | jq -r .data.AccessToken)
+echo $JWT_TOKEN
+
+echo -e "Resetting password for user $USER_NAI_NAME"
+PAYLOAD=$(cat <<EOF
+{"currentPassword":"$NAI_DEFAULT_PW","newPassword":"$NAI_NEW_USER_PW","username":"$USER_NAI_NAME"}
+EOF
+)
+curl $CURL_OPTS -X PATCH "$NAI_UI_ENDPOINT/api/v1/users/reset_password" -H 'Content-Type: application/json'  -H "Authorization: $JWT_TOKEN" -d $PAYLOAD
+
+echo -e "\nCreating HF Token for user $USER_NAI_NAME"
+PAYLOAD=$(cat <<EOF
+{"name":"hf_token","data":{"HF_TOKEN":"$HF_TOKEN"},"type":"hf"}
+EOF
+)
+curl $CURL_OPTS -X POST "$NAI_UI_ENDPOINT/api/v1/credentials" -H 'Content-Type: application/json'  -H "Authorization: $JWT_TOKEN" -d $PAYLOAD
 done

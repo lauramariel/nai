@@ -1,14 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
 # Uses unsupported v1 APIs, do not use in production.
-export NAI_NEW_ADMIN_PW="@@{NAI_NEW_ADMIN_PW}@@"
-export NAI_NEW_USER_PW="@@{NAI_NEW_USER_PW}@@"
-export NAI_UI_ENDPOINT="@@{NAI_UI_ENDPOINT}@@"
+source ~/.secrets
+source ~/.env
+
 export CURL_OPTS="-sk"
 
 USERS=()
 
-# Create adminuser01-05
-for i in {1..5}
+# Create NAI users
+for i in $(seq 1 $NO_OF_USERS)
 do
   USERS+=("adminuser$(printf "%02d" $i)")
 done
@@ -93,4 +95,13 @@ etag=$(curl ${CURL_OPTS}I -X GET "$NAI_UI_ENDPOINT/$ENDPOINT" -u "admin:$NAI_NEW
 curl $CURL_OPTS -X PUT "$NAI_UI_ENDPOINT/$ENDPOINT" -H 'Content-Type: application/json' -H "If-Match: $etag" -u "admin:$NAI_NEW_ADMIN_PW" -d "$PAYLOAD"
 
 sleep 1
+
+echo -e "\nCreating HF Token for user $USER_NAI_NAME"
+PAYLOAD=$(cat <<EOF
+{"name":"hf_token","data":{"HF_TOKEN":"$HF_TOKEN"},"type":"hf"}
+EOF
+)
+curl $CURL_OPTS -X POST "$NAI_UI_ENDPOINT/api/enterpriseai/v1/credentials" -H 'Content-Type: application/json' -u "$USER_NAI_NAME:$NAI_NEW_USER_PW" -d "$PAYLOAD"
+sleep 1
+
 done
