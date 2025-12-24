@@ -11,7 +11,7 @@ source ~/.env
 
 export CURL_OPTS="-sk"
 export HEADERS="Content-Type: application/json"
-export DEFAULT_AUTH="admin:$NAI_DEFAULT_ADMIN_PW"
+export DEFAULT_AUTH="admin:$NAI_DEFAULT_PW"
 export NEW_AUTH="admin:$NAI_NEW_ADMIN_PW"
 
 ##### Reset password

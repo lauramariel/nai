@@ -4,8 +4,11 @@
 # Creates API key not attached to any endpoint
 
 set -euo pipefail
-set -x
+# set -x
 IFS=$'\n\t'
+
+# Modify as needed
+export API_KEY_PREFIX="llama"
 
 # Environment / Config
 source ~/.secrets
@@ -51,17 +54,24 @@ create_api_key() {
   payload=$(cat <<EOF
 {
   "endpoints": [],
-  "name": "apikey$userid"
+  "name": "$API_KEY_PREFIX-$userid"
 }
 EOF
 )
 
-  curl $CURL_OPTS -X POST \
+  response=$(curl $CURL_OPTS -X POST \
     "$NAI_UI_ENDPOINT/api/enterpriseai/v1/apikeys" \
     -H "$HEADERS" \
     -u "$auth" \
-    -d "$payload"
+    -d "$payload")
+
+  api_key=$(echo ${response} | jq '.data.key')
+
+  echo "export USER=$user"
+  echo "export API_KEY=$api_key"
 }
+
+
 
 # Main function
 main() {

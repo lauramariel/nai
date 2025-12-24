@@ -4,8 +4,12 @@
 # Create Endpoint (requires Model to be created)
 
 set -euo pipefail
-set -x
+# set -x
 IFS=$'\n\t'
+
+# Modify as needed
+export API_KEY_PREFIX="llama"
+export NAI_MODEL_NAME_PREFIX="llama"
 
 # Environment / Config
 source ~/.secrets
@@ -60,7 +64,7 @@ EOF
     -u "$auth" \
     -d "$payload" |
     jq -r \
-      --arg NAME "$model_name" \
+      --arg NAME "$NAI_MODEL_NAME_PREFIX-$userid" \
       '.data.models[] | select(.name==$NAME).id'
 }
 
@@ -104,10 +108,10 @@ create_endpoint() {
   echo "Creating endpoint for $user"
 
   local model_id
-  model_id=$(search_model_id "$auth" "llama32-1b$userid")
+  model_id=$(search_model_id "$auth" "$NAI_MODEL_NAME_PREFIX-$userid")
 
   local apikey_id
-  apikey_id=$(search_apikey_id "$auth" "apikey$userid")
+  apikey_id=$(search_apikey_id "$auth" "$API_KEY_PREFIX-$userid")
 
   local payload
   payload=$(cat <<EOF
@@ -127,7 +131,7 @@ create_endpoint() {
   "engine": "vllm",
   "advancedConfig": {
     "vllmArgs": {
-      "maxNumTokens": 4096
+      "maxNumTokens": 512
     }
   }
 }
@@ -144,7 +148,7 @@ EOF
 # Main function
 # Creates API key
 # Creates endpoint using model and API key
-# Requires model downloaded called "llama32-1b$userid"
+# Requires model downloaded and specified as $NAI_MODEL_NAME_PREFIX-$userid (e.g. llama-01)
 main() {
   mapfile -t USERS < <(generate_user_list "$NO_OF_USERS")
 

@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 # Not for production use
 
-# Download specified model from HF
+# Download specified model from HF URL
 
 set -euo pipefail
 set -x
 IFS=$'\n\t'
 
 # Modify as needed
-export MODEL_NAME="meta-llama/Llama-3.2-1B-Instruct"
-#export MODEL_NAME="google/gemma-3-270m-it"
-export MODEL_PREFIX="llama" # prefix for model instance name in NAI
+#export MODEL_NAME="meta-llama/Llama-3.2-1B-Instruct"
+export MODEL_NAME="google/gemma-3-270m-it"
 
 # Environment / Config
 source ~/.secrets
@@ -42,18 +41,6 @@ generate_users() {
 }
 
 # Model functions
-get_catalog_id() {
-  local auth="$1"
-
-  curl $CURL_OPTS -X GET \
-    "$NAI_UI_ENDPOINT/api/enterpriseai/v1/catalogs" \
-    -H "$HEADERS" \
-    -u "$auth" |
-    jq -r \
-      --arg MODEL "$MODEL_NAME" \
-      '.data.catalogs[] | select(.modelName==$MODEL).id'
-}
-
 download_model() {
   local user="$1"
   local auth
@@ -64,17 +51,25 @@ download_model() {
 
   echo "Downloading model for $user"
 
-  local catalog_id
-  catalog_id=$(get_catalog_id "$auth")
 
   local payload
   payload=$(cat <<EOF
 {
-  "modelProvider": {
-    "catalogId": "$catalog_id"
-  },
-  "name": "$MODEL_PREFIX-$userid",
-  "sourceFormat": "hf"
+    "modelProvider": {
+        "customModelDetails": {
+            "developer": "",
+            "modelCapabilities": [
+                "text-to-text"
+            ]
+        }
+    },
+    "name": "gemma-3-270m-it-$userid",
+    "sourceFormat": "hf",
+    "storageProvider": {
+        "huggingFaceHub": {
+            "repoId": "$MODEL_NAME"
+        }
+    }
 }
 EOF
 )
