@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
+# Not for production use
+
+# Set up new NAI instance for bootcamp
+
 set -euo pipefail
 IFS=$'\n\t'
 
-#!/bin/bash
-# Uses unsupported v1 APIs, do not use in production.
 source ~/.secrets
 source ~/.env
 
 export CURL_OPTS="-sk"
 export HEADERS="Content-Type: application/json"
-export DEFAULT_AUTH="admin:$NAI_NEW_ADMIN_PW"
+export DEFAULT_AUTH="admin:$NAI_DEFAULT_ADMIN_PW"
 export NEW_AUTH="admin:$NAI_NEW_ADMIN_PW"
 
 ##### Reset password

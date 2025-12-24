@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
+# Not for production use
+
+# Create users for bootcamp
+
 set -euo pipefail
 IFS=$'\n\t'
-# Uses unsupported v1 APIs, do not use in production.
+
 source ~/.secrets
 source ~/.env
 
