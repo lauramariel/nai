@@ -131,11 +131,10 @@ helm install nai-operators ./nai-operators-2.5.0.tgz --version=2.5.0  -n nai-sys
         --insecure-skip-tls-verify -f nai-operators-override-values.yaml
 
 # Wait until it's done installing
-echo "Waiting for redis-standalone to be created in namespace nai-system..."
-until kubectl wait --for condition=ready pods -l app=redis-standalone -n nai-system >/dev/null 2>&1; do sleep 2; done
-echo "Waiting for nai-clickhouse-operator to be created in namespace nai-system..."
-until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=nai-clickhouse-operator -n nai-system >/dev/null 2>&1; do sleep 2; done
-
+echo -n "Waiting for redis-standalone to be created in namespace nai-system"
+until kubectl wait --for condition=ready pods -l app=redis-standalone -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
+echo -n "Waiting for nai-clickhouse-operator to be created in namespace nai-system"
+until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=nai-clickhouse-operator -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
 
 # Install nai-core
 helm install nai-core ./nai-core-2.5.0.tgz --version=2.5.0 -n nai-system --create-namespace --wait \
@@ -145,4 +144,6 @@ helm install nai-core ./nai-core-2.5.0.tgz --version=2.5.0 -n nai-system --creat
     --set defaultStorageClassName=nutanix-volume \
     --set naiMonitoring.nodeExporter.serviceMonitor.namespaceSelector.matchNames[0]=$NKP_NAMESPACE \
     --set naiMonitoring.dcgmExporter.serviceMonitor.namespaceSelector.matchNames[0]=$NKP_NAMESPACE \
+    --set "nai-clickhouse-keeper.clickhouseKeeper.resources.limits.memory=1Gi" \
+	--set "nai-clickhouse-keeper.clickhouseKeeper.resources.requests.memory=1Gi" \
     -f nai-core-override-values.yaml
