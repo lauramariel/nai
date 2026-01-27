@@ -15,6 +15,13 @@ kubectl get node -l nvidia.com/gpu.present=true -o name | cut -d/ -f2 | xargs -I
 kubectl get node --selector='nvidia.com/gpu.present!=true,!node-role.kubernetes.io/control-plane' -o name | cut -d/ -f2 | xargs -I {} sh -c "kubectl drain {} --delete-emptydir-data --ignore-daemonsets --disable-eviction && kubectl uncordon {}"
 ```
 
+## Drain a specific node
+```
+#NODE_NAME="nkp-gpu-passthrough-worker-0-pdhgp-p4gs2-49745-dfbmf"
+kubectl drain $NODE_NAME --ignore-daemonsets
+kubectl uncordon $NODE_NAME
+```
+
 ## See what's running on a specific node in all namespaces
 kubectl get pods -o wide --field-selector spec.nodeName=$NODE_NAME -A
 
@@ -90,9 +97,28 @@ nai-system    └─Pod/nai-api-57c44b98cf-68pjp               True           25
 nai-system      └─CiliumEndpoint/nai-api-57c44b98cf-68pjp  -              25d
 ```
 
-## kubens
+# kubens
 
-### Switch namespace
+## Switch namespace
 ```
 kubens $NS
+```
+
+# stern
+
+## Tail multiple pods logs where pod matches search-string
+
+```
+stern <search-string>
+```
+
+This will match any pod containing the word 'search-string' 
+
+https://kubernetes.io/blog/2016/10/tail-kubernetes-with-stern/
+
+
+Can also use --exclude to filter out lines containing the provided regex
+
+```
+stern <search-string> --exclude "INFO"
 ```
