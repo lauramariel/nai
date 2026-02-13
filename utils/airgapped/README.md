@@ -5,7 +5,7 @@ This is meant to be run on a jump host that has access to both registries to sol
 
 Requirements:
 - images.txt with all image paths
-- access to both source and desetination registries
+- access to both source and destination registries
 - proper credentials configured via docker login
 
 Specify login-source if any of the image paths specified in images.txt require a login
