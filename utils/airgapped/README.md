@@ -1,4 +1,5 @@
-This script pulls container images defined in images.txt, tags them, then pushes to the destination registry.
+# Generate Script
+generate-migration-script.sh pulls container images defined in images.txt, tags them, then pushes to the destination registry.
 
 Images should be in images.txt
 
@@ -41,13 +42,20 @@ docker tag registry.example.com/team/app:2.1.0 harbor.example.com/bootcamps/team
 docker push harbor.example.com/bootcamps/team/app:2.1.0
 ```
 
-You can use the --pull, --push, and --tag options if you want a script that just contains those actions e.g.
+# Running the generated script
+Then, you can run the generated script:
+```
+bash migrate-images.sh
+```
+
+# Other options
+You can also use the --pull, --push, and --tag options if you want a script that just contains those actions e.g.
 
 ```
 bash generate-migration-script.sh harbor.example.com --dest-path bootcamps --tag
 ```
 
-will produce a script that just contains
+will produce a script that just contains docker tag commands, so you can do each push/pull/tag step individually
 
 ```
 echo "Processing docker.io/library/nginx:1.25"
