@@ -2113,7 +2113,7 @@
                                         "description": "",
                                         "attrs": {
                                             "type": "",
-                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\n# Installing Milvus\n\nsource ~/.secrets\nsource ~/.env\n\nhelm repo add milvus https://zilliztech.github.io/milvus-helm/\nhelm repo update\n\ncd ~\nexport MILVUS_VALUES_FILE=\"milvus-values.yaml\"\nexport MILVUS_INGRESS_FILE=\"milvus-ingress.yaml\"\nexport MILVUS_ATTU_INGRESS_FILE=\"milvus-attu-ingress.yaml\"\n\n# Create Milvus config templates\ncat <<EOF > $MILVUS_VALUES_FILE\n#ATTU Frontend\nattu:\n  enabled: true\n  name: attu\n  service:\n    type: ClusterIP\n    port: 80\n\n# Milvus Cluster settings\ncluster:\n  enabled: false\n\netcd:\n  replicaCount: 1\n\npulsar:\n  enabled: false\n\nservice:\n  type: ClusterIP\n  ports:\n  - port: 80\n    protocol: TCP\n    targetPort: 19530\n\n# Disable MinIO and configuring External S3\nminio:\n  enabled: false\n\nexternalS3:\n  enabled: true\n  host: \"\" # Nutanix Objects Instance IP\n  port: 80\n  accessKey: \"\" # Access Key\n  secretKey: \"\" # Secret Key\n  useSSL: false\n  bucketName: \"docs\" # Bucket Name\n  rootPath: \"\"\n  region: us-east-1\n  useVirtualHost: false\nEOF\n\ncat <<EOF > $MILVUS_INGRESS_FILE\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: milvus-vectordb\n  annotations:\n    nginx.ingress.kubernetes.io/ssl-redirect: \"true\"\n    nginx.ingress.kubernetes.io/backend-protocol: \"GRPC\"\n    nginx.ingress.kubernetes.io/proxy-body-size: 100m\nspec:\n  ingressClassName: nginx\n  tls:\n  - hosts:\n    - hostname # the FQDN\n    secretName: nai-cert\n  rules:\n    - host: hostname\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: milvus-vectordb\n                port:\n                  number: 19530\nEOF\n\ncat <<EOF > $MILVUS_ATTU_INGRESS_FILE\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: milvus-vectordb-attu\n  annotations:\n    nginx.ingress.kubernetes.io/force-ssl-redirect: \"true\"\n    nginx.ingress.kubernetes.io/proxy-body-size: 2048m\nspec:\n  ingressClassName: nginx\n  tls:\n  - hosts:\n    - hostname # the FQDN\n    secretName: nai-cert\n  rules:\n    - host: hostname\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: milvus-vectordb-attu\n                port:\n                  number: 80\nEOF\n\necho \"Creating $NO_OF_USERS Milvus instances\"\n\nfor i in $(seq 1 $NO_OF_USERS)\ndo\n    export INSTANCE=\"milvus-adminuser0$i\"\n\n    kubectl create namespace ${INSTANCE} --dry-run=client -o yaml | kubectl apply -f -\n\n    # use the existing certificate\n    kubectl get secret -n nai-system nai-cert -o yaml | sed \"s/namespace: nai-system/namespace: ${INSTANCE}/g\" | kubectl apply -f -\n    kubectl get secret nai-cert -n ${INSTANCE}\n\n    export S3_BUCKET_NAME=\"adminuser0$i\"\n\n    # Update user-specific values\n    echo \"S3_HOST=$S3_HOST\"\n    echo \"S3_ACCESS_KEY=$S3_ACCESS_KEY\"\n    echo \"S3_SECRET_KEY=$S3_SECRET_KEY\"\n    echo \"S3_BUCKET_NAME=$S3_BUCKET_NAME\"\n    yq -i -e '.externalS3.host = strenv(S3_HOST)' $MILVUS_VALUES_FILE\n    yq -i -e '.externalS3.accessKey = strenv(S3_ACCESS_KEY)' $MILVUS_VALUES_FILE\n    yq -i -e '.externalS3.secretKey = strenv(S3_SECRET_KEY)' $MILVUS_VALUES_FILE\n    yq -i -e '.externalS3.bucketName = strenv(S3_BUCKET_NAME)' $MILVUS_VALUES_FILE\n\n    # Install\n    helm upgrade --cleanup-on-fail \\\n        --install milvus-vectordb milvus/milvus --version 4.2.44 \\\n        --set image.tag=\"2.5.8\" \\\n        --namespace ${INSTANCE} \\\n        --create-namespace \\\n        --wait \\\n        --values milvus-values.yaml\n\n    # Configure ingress\n    export INGRESS_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath=\"{.status.loadBalancer.ingress[].ip}\" && echo)\n    export DB_HOSTNAME=\"${INSTANCE}-${INGRESS_IP//./-}.sslip.nutanixdemo.com\"\n    export ATTU_HOSTNAME=\"${INSTANCE}-attu-${INGRESS_IP//./-}.sslip.nutanixdemo.com\"\n    yq -i -e \".spec.rules[0].host = strenv(DB_HOSTNAME)\" $MILVUS_INGRESS_FILE\n    yq -i -e \".spec.tls[0].hosts[0] = strenv(DB_HOSTNAME)\" $MILVUS_INGRESS_FILE\n    yq -i -e \".spec.rules[0].host = strenv(ATTU_HOSTNAME)\" $MILVUS_ATTU_INGRESS_FILE\n    yq -i -e \".spec.tls[0].hosts[0] = strenv(ATTU_HOSTNAME)\" $MILVUS_ATTU_INGRESS_FILE\n\n\n    kubectl apply -f $MILVUS_INGRESS_FILE -n ${INSTANCE}\n    kubectl apply -f $MILVUS_ATTU_INGRESS_FILE -n ${INSTANCE}\n    \n done",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\n# Installing Milvus\n\nsource ~/.secrets\nsource ~/.env\n\n# Pull Helm Chart\nhelm pull oci://$NAI_IMAGE_REGISTRY/milvus --version 4.2.44\n\ncd ~\nexport MILVUS_VALUES_FILE=\"milvus-values.yaml\"\nexport MILVUS_INGRESS_FILE=\"milvus-ingress.yaml\"\nexport MILVUS_ATTU_INGRESS_FILE=\"milvus-attu-ingress.yaml\"\n\n# Create Milvus config templates\ncat <<EOF > $MILVUS_VALUES_FILE\nimage:\n  repository: registry.nutanixdemo.com/bootcamps/milvusdb/milvus\n  tag: v2.5.8\n  pullPolicy: IfNotPresent\n\n# ATTU Frontend\nattu:\n  enabled: true\n  name: attu\n  image:\n    repository: registry.nutanixdemo.com/bootcamps/zilliz/attu\n    tag: v2.5.3\n    pullPolicy: IfNotPresent\n  service:\n    type: ClusterIP\n    port: 80\n\n# Milvus Cluster settings\ncluster:\n  enabled: false\n\n# ETCD settings\netcd:\n  replicaCount: 1\n  image:\n    registry: registry.nutanixdemo.com/bootcamps\n    repository: milvusdb/etcd\n    tag: 3.5.18-r1 \n    pullPolicy: IfNotPresent\n\n# Pulsar settings\npulsarv3:\n  enabled: false\n\n# Milvus Service settings\nservice:\n  type: ClusterIP\n  ports:\n    - port: 80\n      protocol: TCP\n      targetPort: 19530\n\n# Disable MinIO and configuring External S3\nminio:\n  enabled: false\n\nexternalS3:\n  enabled: true\n  host: \"\" # Nutanix Objects Instance IP\n  port: 80\n  accessKey: \"\" # Access Key\n  secretKey: \"\" # Secret Key\n  useSSL: false\n  bucketName: \"docs\" # Bucket Name\n  rootPath: \"\"\n  region: us-east-1\n  useVirtualHost: false\nEOF\n\ncat <<EOF > $MILVUS_INGRESS_FILE\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: milvus-vectordb\n  annotations:\n    nginx.ingress.kubernetes.io/ssl-redirect: \"true\"\n    nginx.ingress.kubernetes.io/backend-protocol: \"GRPC\"\n    nginx.ingress.kubernetes.io/proxy-body-size: 100m\nspec:\n  ingressClassName: nginx\n  tls:\n  - hosts:\n    - hostname # the FQDN\n    secretName: nai-cert\n  rules:\n    - host: hostname\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: milvus-vectordb\n                port:\n                  number: 19530\nEOF\n\ncat <<EOF > $MILVUS_ATTU_INGRESS_FILE\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: milvus-vectordb-attu\n  annotations:\n    nginx.ingress.kubernetes.io/force-ssl-redirect: \"true\"\n    nginx.ingress.kubernetes.io/proxy-body-size: 2048m\nspec:\n  ingressClassName: nginx\n  tls:\n  - hosts:\n    - hostname # the FQDN\n    secretName: nai-cert\n  rules:\n    - host: hostname\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: milvus-vectordb-attu\n                port:\n                  number: 80\nEOF\n\necho \"Creating $NO_OF_USERS Milvus instances\"\n\nfor i in $(seq 1 $NO_OF_USERS)\ndo\n    export INSTANCE=\"milvus-adminuser0$i\"\n\n    kubectl create namespace ${INSTANCE} --dry-run=client -o yaml | kubectl apply -f -\n\n    # copy the existing certificate from nai-system\n    kubectl get secret nai-cert -n nai-system -o json | \\\n    jq 'del(.metadata.namespace, .metadata.resourceVersion, .metadata.uid, .metadata.creationTimestamp, .metadata.managedFields)' | \\\n    kubectl apply -n ${INSTANCE} -f -\n    \n    kubectl get secret nai-cert -n ${INSTANCE}\n\n    export S3_BUCKET_NAME=\"adminuser0$i\"\n\n    # Update user-specific values\n    echo \"S3_HOST=$S3_HOST\"\n    echo \"S3_ACCESS_KEY=$S3_ACCESS_KEY\"\n    echo \"S3_SECRET_KEY=$S3_SECRET_KEY\"\n    echo \"S3_BUCKET_NAME=$S3_BUCKET_NAME\"\n    yq -i -e '.externalS3.host = strenv(S3_HOST)' $MILVUS_VALUES_FILE\n    yq -i -e '.externalS3.accessKey = strenv(S3_ACCESS_KEY)' $MILVUS_VALUES_FILE\n    yq -i -e '.externalS3.secretKey = strenv(S3_SECRET_KEY)' $MILVUS_VALUES_FILE\n    yq -i -e '.externalS3.bucketName = strenv(S3_BUCKET_NAME)' $MILVUS_VALUES_FILE\n\n    # Install\n    helm upgrade --cleanup-on-fail \\\n        --install ./milvus-4.2.44.tgz\\\n        --namespace ${INSTANCE} \\\n        --create-namespace \\\n        --wait \\\n        --values milvus-values.yaml\n\n    # Configure ingress\n    export INGRESS_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath=\"{.status.loadBalancer.ingress[].ip}\" && echo)\n    export DB_HOSTNAME=\"${INSTANCE}-${INGRESS_IP//./-}.sslip.nutanixdemo.com\"\n    export ATTU_HOSTNAME=\"${INSTANCE}-attu-${INGRESS_IP//./-}.sslip.nutanixdemo.com\"\n    yq -i -e \".spec.rules[0].host = strenv(DB_HOSTNAME)\" $MILVUS_INGRESS_FILE\n    yq -i -e \".spec.tls[0].hosts[0] = strenv(DB_HOSTNAME)\" $MILVUS_INGRESS_FILE\n    yq -i -e \".spec.rules[0].host = strenv(ATTU_HOSTNAME)\" $MILVUS_ATTU_INGRESS_FILE\n    yq -i -e \".spec.tls[0].hosts[0] = strenv(ATTU_HOSTNAME)\" $MILVUS_ATTU_INGRESS_FILE\n\n\n    kubectl apply -f $MILVUS_INGRESS_FILE -n ${INSTANCE}\n    kubectl apply -f $MILVUS_ATTU_INGRESS_FILE -n ${INSTANCE}\n    \n done",
                                             "script_type": "sh",
                                             "command_line_args": "",
                                             "exit_status": []
@@ -2284,8 +2284,8 @@
                         "cluster_reference": {
                             "type": "",
                             "kind": "cluster",
-                            "name": "RNO-SPOC002-4",
-                            "uuid": "00064655-a13d-6729-6c5c-7cc2558db9fc"
+                            "name": "PHX-POC214",
+                            "uuid": "00064b0c-b6d3-2c88-7018-ac1f6b3bbab4"
                         },
                         "resources": {
                             "type": "",
@@ -2297,7 +2297,7 @@
                                         "type": "",
                                         "kind": "subnet",
                                         "name": "primary",
-                                        "uuid": "03d54553-5335-449d-9d27-d24555b04ecf"
+                                        "uuid": "ad25df83-be54-4b80-abfa-a2739310e9f6"
                                     },
                                     "network_function_nic_type": "INGRESS",
                                     "mac_address": "",
@@ -2314,7 +2314,7 @@
                             "gpu_list": [],
                             "parent_reference": null,
                             "hardware_clock_timezone": "",
-                            "account_uuid": "e4ad82cb-db93-4d09-82d0-6166507d0074",
+                            "account_uuid": "c64727cc-6145-46d3-9443-f89ee847e68e",
                             "guest_customization": {
                                 "type": "",
                                 "cloud_init": {
@@ -2345,7 +2345,7 @@
                                         "type": "",
                                         "kind": "image",
                                         "name": "nkp-rocky-9.6-release-cis-1.33.5-20251108010758.qcow2",
-                                        "uuid": "91a02a00-f249-462b-841b-1fe1f2f8a7c2"
+                                        "uuid": "00977f7f-7245-4384-af31-2cf9313e3de1"
                                     },
                                     "volume_group_reference": null,
                                     "device_properties": {
@@ -2619,7 +2619,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "un604DwLablptTl2ixNU3EZ/RWdvT0o8+adIPHsv80SfftYf9HDJmsxIAQ==:utf-8"
+                            "value": "fmoW35/1EBJe3F8qk+XUQtOX42H8QjRn0UAYS3uVggkyEMv9Jv5j+tUZRw==:utf-8"
                         },
                         {
                             "type": "SECRET",
@@ -2635,7 +2635,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "Nmrn6L65JNfpWKOJIrK1brc+9dSHNgY4et+X1/iY2JdH/xKR7xEO1fqOuTS6zUMfPsyeJxJuJy6NTyTPEv9y93ZCBjqCCiAk5Q==:utf-8"
+                            "value": "BqrGVT9Qchmta+yQvHqdWJPu+fe7e8Q/Qs6AorLt+SAA0DcvWQBQDYkVWBuh/y8GONVincUtPGsY5JtGCi4DUWKY1wMrLPjsmQ==:utf-8"
                         },
                         {
                             "type": "LOCAL",
@@ -2663,7 +2663,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.35"
+                            "value": "10.38.214.52"
                         },
                         {
                             "type": "LOCAL",
@@ -2677,7 +2677,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.24"
+                            "value": "10.38.214.43"
                         },
                         {
                             "type": "LOCAL",
@@ -2691,7 +2691,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.15"
+                            "value": "10.38.214.15"
                         },
                         {
                             "type": "LOCAL",
@@ -2705,7 +2705,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.15"
+                            "value": "10.38.214.15"
                         },
                         {
                             "type": "LOCAL",
@@ -2719,7 +2719,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.14"
+                            "value": "10.38.214.14"
                         },
                         {
                             "type": "LOCAL",
@@ -2733,7 +2733,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "http://10.8.1.18/vx-images/nkp_v2.16.1_linux_amd64.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sY69J5-JrGDfVDo7vnodrNfFyVLNmCTL%2F20251219%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251219T224258Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=5e0097f0927d12d5b61f1f55a3677672f2e82a730096a2403bba5b8f6a3ede8e"
+                            "value": "http://10.38.245.18/vx-images/nkp_v2.16.1_linux_amd64.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=JKWuIlc1BKC0LYLZT2PRWRQxR3V9Oblm%2F20260218%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260218T165938Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=4fedd6746d0470dc3944bd02513ed44df7c7d947c97a268fe729d2f9b6bfde74"
                         },
                         {
                             "type": "LOCAL",
@@ -2763,7 +2763,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "/U5wMt6j50bZIO8WUo/usiD2ocewdnxsecztOnfpADcNcOWtn2PXspiIdw==:utf-8"
+                            "value": "dhF+fhRHhSpwvz4oy7hBYsqxlLisK/0r1v0ueAdWskpWeVdJTTecczwK8A==:utf-8"
                         },
                         {
                             "type": "LOCAL",
@@ -2777,7 +2777,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.6"
+                            "value": "10.38.214.6"
                         },
                         {
                             "type": "LOCAL",
@@ -2914,7 +2914,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.7"
+                            "value": "10.38.214.7"
                         },
                         {
                             "type": "LOCAL",
@@ -2960,7 +2960,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "RNO-SPOC002-4"
+                            "value": "PHX-POC214"
                         },
                         {
                             "type": "LOCAL",
@@ -2974,7 +2974,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "10.8.31.37"
+                            "value": "10.38.214.37"
                         },
                         {
                             "type": "LOCAL",
@@ -3004,7 +3004,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "wa0OFAiqMqQeNw4GkoOXWXiZ9idRP4YpbTzEgyZzOB5adrFyfNdwkn6Mcg==:utf-8"
+                            "value": "SjeTMe7kYNObNEA+SLTbXqPO5s/aX2WRAwy5vAuzPnCzsrRYk3/M5quQHg==:utf-8"
                         },
                         {
                             "type": "LOCAL",
@@ -3050,7 +3050,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "2.5"
+                            "value": "2.2"
                         },
                         {
                             "type": "SECRET",
@@ -3070,7 +3070,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "/J8Vq+e4iaX612CvSnyApp+AnNC2pI33UDuBF82YcQxVxh3jVWFTKqQr9oD2cdQJ9mnNJx6GcKpKgpCO1HF/RLe55R7y:utf-8"
+                            "value": "tjA1vUMKcpM612UxIzyroWMbWaTdhwCWQ4ux94klCWEpBQfKQ4aO6oVAtIkt/NmR6DpPy3/660iUYxtD0lxWdE1GXWKn:utf-8"
                         },
                         {
                             "type": "SECRET",
@@ -3090,7 +3090,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "tTiRqOasXngFkp/jsnAqv266S+kMWAR1dUOb7bFjSMBI8Vex7kj2BsgfHg==:utf-8"
+                            "value": "sIvHwVACJ1oZ1EeVq76+DebNt+KzIh2rO62ZZ8TRMnEnKNQMYOHP4MZYXw==:utf-8"
                         },
                         {
                             "type": "SECRET",
@@ -3110,7 +3110,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "tbCcn5QxexUHWTQWyEwWgAX03BVbT6EhoHgitH612Mc4HxVO6WwHWHVa0Q==:utf-8"
+                            "value": "9friVqeEpLBXJt/Qy+o2fc9h3lFb+SNFWbNSHKWJcKzD+VVer5WeHuYViQ==:utf-8"
                         },
                         {
                             "type": "SECRET",
@@ -3130,7 +3130,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "sO9FxXHOaOP+R1TgEOuYOHIeAX4BAz6mKhmva8f9noqxf/fA8owBuizZBsoU:utf-8"
+                            "value": "BFsn5or930LdQKGNL7go4V1k7YuPZoSJtpSV/ERSukWpTdxdUs1u/Gm0+Osv:utf-8"
                         },
                         {
                             "type": "LOCAL",
@@ -3186,7 +3186,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "MzlinFn7I8wrq/k7FiblvcJjUU2g9/CMSxTNSbJIxCduwUNaYz1HXAy+0oFcPw==:utf-8"
+                            "value": "U9oS1pyFuNo6/pu5TBPsAMBnHv2gHPu9PyoVh99MFlonBu1j07+l07so58a/EQ==:utf-8"
                         },
                         {
                             "type": "SECRET",
@@ -3206,7 +3206,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "klHtoPuuH/dvhROB2/RPL/74Q4K0jug3AAUEF/1PkdxT6DZODO108HEX/7qtQOLGPLgiYL8o5sC1j5EYporNieGFlj8=:utf-8"
+                            "value": "U7nof44BCPBnYy29eWBC+db8GGj9hjeogdQOBHJ3Z1IBqjIZht1wM4eZWW0XaDWBbSAISgcFR+0oPGNJz1lMgl9nwMI=:utf-8"
                         },
                         {
                             "type": "SECRET",
@@ -3226,7 +3226,7 @@
                                 "is_secret_modified": false,
                                 "secret_reference": {}
                             },
-                            "value": "Jr/abKf+gcXJ/wWNnkSya4dw2+LgmWmpOwswzaOb22QPctsVXLTYI5ZDkmy9sffdMnRuqV5bJxNp1xI59DV6VRK0u2ib7Tp5fw==:utf-8"
+                            "value": "W1dovTIv5681i2GYM/1KmO6yjQCSGWHA7Sj9n/XAumHB2HQSVSOekmkfQjkBuTML2l43NKYk0aUd6N4l9AlvvUgHslmeA1XfYg==:utf-8"
                         },
                         {
                             "type": "LOCAL",
@@ -3244,7 +3244,7 @@
                             "attrs": {
                                 "type": ""
                             },
-                            "value": "http://10.8.1.18/vx-images/nai_bootcamp_configure_objects.py?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sY69J5-JrGDfVDo7vnodrNfFyVLNmCTL%2F20251219%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251219T224258Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=7a808ebe101e4e1f705797ded7de7e0beb1c4683537719e03979029ad88ff2ff"
+                            "value": "http://10.38.245.18/vx-images/nai_bootcamp_configure_objects.py?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=JKWuIlc1BKC0LYLZT2PRWRQxR3V9Oblm%2F20260218%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260218T165938Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=a5562522d6408b7310bdd96265863f9ebda1cfe42624279c6aca3d2bcd1f89d5"
                         },
                         {
                             "type": "LOCAL",
@@ -3342,8 +3342,8 @@
                     "name": "CRED_SSH",
                     "description": "",
                     "editables": {
-                        "username": false,
-                        "secret": true
+                        "secret": true,
+                        "username": false
                     },
                     "username": "nutanix",
                     "secret": {
@@ -3351,7 +3351,7 @@
                             "secret_reference": {},
                             "is_secret_modified": true
                         },
-                        "value": "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:utf-8"
+                        "value": "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:utf-8"
                     },
                     "cred_class": "static"
                 },
@@ -3360,8 +3360,8 @@
                     "name": "CRED_PC",
                     "description": "",
                     "editables": {
-                        "username": false,
-                        "secret": true
+                        "secret": true,
+                        "username": false
                     },
                     "username": "admin",
                     "secret": {
@@ -3369,7 +3369,7 @@
                             "secret_reference": {},
                             "is_secret_modified": true
                         },
-                        "value": "KidH/JUGvoEj+DREUyU0KNNtJ7MMXlqfvk4rXr6b4+Js209SKjYFMkpwJA==:utf-8"
+                        "value": "/1Nmmi7KixmUBkN/DDd2vF2Ef4dM9jxxBW7dUgNMb0PruhlpspBN1TLpZA==:utf-8"
                     },
                     "cred_class": "static"
                 }
@@ -3425,16 +3425,15 @@
                     "x": -1368.7943125477873,
                     "y": -701.4442415638308
                 }
-            },
-            "global_variable_reference_list": []
+            }
         }
     },
     "api_version": "3.0",
-    "product_version": "4.3.0",
+    "product_version": "4.2.1",
     "metadata": {
-        "last_update_time": "1766443771623938",
-        "creation_time": "1766190787305592",
-        "spec_version": 5,
+        "last_update_time": "1771462383594673",
+        "creation_time": "1771462317839404",
+        "spec_version": 2,
         "name": "nai-on-nkp-v2-5",
         "kind": "blueprint"
     },
