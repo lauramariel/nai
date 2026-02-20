@@ -1,7 +1,12 @@
 # Generate Script
 generate-migration-script.sh pulls container images defined in images.txt, tags them, then pushes to the destination registry.
 
-Images should be in images.txt
+This is meant to be run on a jump host that has access to both registries to solve the problem of needing to access the images from an environment that only had access to the destination registry (e.g. an airgapped, private registry)
+
+Requirements:
+- images.txt with all image paths
+- access to both source and destination registries
+- proper credentials configured via docker login
 
 Specify login-source if any of the image paths specified in images.txt require a login
 
