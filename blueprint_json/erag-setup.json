@@ -1,0 +1,1394 @@
+{
+    "status": {},
+    "spec": {
+        "name": "erag-setup",
+        "description": "Ubuntu VM for setting up eRAG",
+        "resources": {
+            "service_definition_list": [
+                {
+                    "name": "Service1",
+                    "description": "",
+                    "variable_list": [],
+                    "action_list": [
+                        {
+                            "type": "system",
+                            "name": "action_create",
+                            "description": "System action for creating an application",
+                            "runbook": {
+                                "name": "9de28053_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "f11b97d9_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "f11b97d9_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_delete",
+                            "description": "System action for deleting an application. Deletes created VMs as well",
+                            "runbook": {
+                                "name": "c2c29eff_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "798e7f93_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "798e7f93_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_start",
+                            "description": "System action for starting an application",
+                            "runbook": {
+                                "name": "5245ef7d_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "76f3dc0b_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "76f3dc0b_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_stop",
+                            "description": "System action for stopping an application",
+                            "runbook": {
+                                "name": "683ac5dd_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "ed884349_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "ed884349_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_restart",
+                            "description": "System action for restarting an application",
+                            "runbook": {
+                                "name": "d2724d8c_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "02418df2_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "02418df2_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "user",
+                            "name": "InstallDeps",
+                            "description": "",
+                            "runbook": {
+                                "name": "0ee03ef5_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "e0da6b81_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": [
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Install Tools",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Copy kubeconfig",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                }
+                                            ]
+                                        },
+                                        "child_tasks_local_reference_list": [
+                                            {
+                                                "name": "Install Tools",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Copy kubeconfig",
+                                                "kind": "app_task"
+                                            }
+                                        ],
+                                        "variable_list": [],
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Install Tools",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\nexport APT_OPTS='DPkg::Options::=\"--force-confnew\"'\n\n# Wait for any apt locks to be free\nwait_for_apt() {\n  echo \"Waiting for apt + cloud-init...\"\n\n  # Wait for cloud-init (very important on fresh VMs)\n  if command -v cloud-init >/dev/null 2>&1; then\n    sudo cloud-init status --wait\n  fi\n\n  # Wait for apt systemd services to finish\n  while systemctl is-active --quiet apt-daily.service \\\n     || systemctl is-active --quiet apt-daily-upgrade.service; do\n    echo \"Waiting for apt systemd services...\"\n    sleep 2\n  done\n\n  # Final safety: wait for locks\n  while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 \\\n     || sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1 \\\n     || sudo fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do\n    echo \"Waiting for apt locks...\"\n    sleep 2\n  done\n}\n\nwait_for_apt\n\nsudo apt-get -o $APT_OPTS -y update\nsudo apt-get -o $APT_OPTS -y install ansible python3-venv\n\ncurl -sLS https://get.arkade.dev| sudo sh\nsudo chown -R nutanix:nutanix /usr/local/bin/arkade\n\n## install utils\narkade get \\\nkubectx \\\nkubens \\\nkrew \\\nstern\n\n## install yq\nsudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq\nsudo chown -R nutanix:nutanix /usr/bin/yq\nsudo chmod +x /usr/bin/yq\n\n## install k9s\ncurl -sS https://webinstall.dev/k9s | bash\n\n## set path for arkade and krew kubectl plugin binaries\nexport PATH=\"$HOME/.arkade/bin/:$HOME/.krew/bin:$PATH\"\n\necho \"alias k=$(which kubectl)\" >> $HOME/.bashrc\necho \"alias kns=$(which kubens)\" >> $HOME/.bashrc\n\nexport INGRESS_IP=@@{WL01_LB_IP_RANGE_ENDS}@@\n\ncat <<EOF >> ~/.env\nexport PATH_TO_ERAG_KUBECFG=\"/home/nutanix/erag.conf\"\nexport ERAG_VERSION=@@{ERAG_VERSION}@@\nexport FQDN=\"erag-${INGRESS_IP//./-}.sslip.nutanixdemo.com\"\nEOF",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Copy kubeconfig",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\n#scp nutanix@nai-boot.ntnxlab.local:~/.kube/config /home/nutanix/config\nsshpass -p @@{NAI_VM_PW}@@ scp -o StrictHostKeyChecking=no nutanix@nai-boot.ntnxlab.local:~/erag.conf /home/nutanix/erag.conf\n\n\ncat <<EOF >> ~/.env\nexport KUBECONFIG=\"/home/nutanix/erag.conf\"\nEOF",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "e0da6b81_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "user",
+                            "name": "InstallErag",
+                            "description": "",
+                            "runbook": {
+                                "name": "5b5ea4f9_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "9ba44dc1_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": [
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Clone Git Repo",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Update config yaml",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Update config yaml",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Configure venv",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Configure venv",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Install Ansible collection",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Install Ansible collection",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Configure NAI endpoint",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Configure NAI endpoint",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Add Certs",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Add Certs",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Configure Storage",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Configure Storage",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Install Erag",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                }
+                                            ]
+                                        },
+                                        "child_tasks_local_reference_list": [
+                                            {
+                                                "name": "Clone Git Repo",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Update config yaml",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Configure venv",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Install Ansible collection",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Configure NAI endpoint",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Add Certs",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Configure Storage",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Install Erag",
+                                                "kind": "app_task"
+                                            }
+                                        ],
+                                        "variable_list": [],
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Clone Git Repo",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\n# Clone repo\ngit clone https://github.com/opea-project/Enterprise-RAG\ncd Enterprise-RAG/deployment\n\n# Configure ansible log path\ngrep -q \"\\[defaults\\]\" ansible.cfg && sed -i '/\\[defaults\\]/a log_path = ./ansible.log' ansible.cfg || echo -e \"[defaults]\\nlog_path = ./ansible.log\" >> ansible.cfg",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Update config yaml",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\nexport PATH_TO_KUBECFG=\"/home/nutanix/.kube/config\"\n# this needs to be the end IP from load balancer pool in workload cluster, assuming LB pool has 2 IPs and the first one is for Traefik\nexport FQDN=\"erag-10-42-231-151.sslip.nutanixdemo.com\"\n\ncd $HOME/Enterprise-RAG/deployment\nyq e '.kubeconfig = strenv(PATH_TO_KUBECFG)' -i inventory/sample/config.yaml\nyq e '.FQDN = strenv(FQDN)' -i inventory/sample/config.yaml\nyq e '.install_csi = \"nfs\"' -i inventory/sample/config.yaml\nyq e '.ingress.service_type = \"LoadBalancer\"' -i inventory/sample/config.yaml\nyq e '.balloons.enabled=false' -i inventory/sample/config.yaml\nyq e '.registry=\"registry.nutanixdemo.com/bootcamps/intel-erag\"' -i inventory/sample/config.yaml\n\n# Check\nyq .kubeconfig inventory/sample/config.yaml --no-colors\nyq .FQDN inventory/sample/config.yaml --no-colors\nyq .telemetry inventory/sample/config.yaml --no-colors\nyq .install_csi inventory/sample/config.yaml --no-colors\nyq .ingress inventory/sample/config.yaml --no-colors\nyq e .registry inventory/sample/config.yaml --no-colors",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Configure venv",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\necho \"Working dir: $PWD\"\ncd $HOME/Enterprise-RAG/deployment\n\nVENV=\"$HOME/Enterprise-RAG/deployment/erag-venv\"\n\nif [ ! -d \"$VENV\" ]; then\n python3 -m venv \"$VENV\"\nfi\n\n$VENV/bin/python -m pip install --upgrade pip\n$VENV/bin/pip install -r requirements.txt",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Install Ansible collection",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\ncd $HOME/Enterprise-RAG/deployment\n\n/home/nutanix/Enterprise-RAG/deployment/erag-venv/bin/ansible-galaxy collection install -r requirements.yaml --upgrade",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Configure NAI endpoint",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\nexport LLM_MODEL_NAME=\"llama31-8b-hf\"\nexport LLM_ENDPOINT=\"https://nai.tmelab.net/enterpriseai\"\nexport LLM_API_KEY=\"ee5975c3-78b6-4538-81d3-a186157c526d\"\n\n\ncd $HOME/Enterprise-RAG/deployment\n# Update config to point to the external endpoint configuration files\nyq e '.pipelines[0].samplePath = \"chatqa/reference-external-endpoint.yaml\"' -i inventory/sample/config.yaml\nyq e '.pipelines[0].resourcesPath = \"chatqa/resources-reference-external-endpoint.yaml\"' -i inventory/sample/config.yaml\n\n#  Check\nyq .pipelines[0] inventory/sample/config.yaml --no-colors\n\n# Edit reference-external-endpoint.yaml\nyq e '(.spec.nodes.root.steps[] | select(.name == \"Llm\")).internalService.config |= ( \n.endpoint = \"/v1/chat/completions\" |\n.LLM_MODEL_SERVER = \"vllm\" |\n.LLM_MODEL_NAME = strenv(LLM_MODEL_NAME) | \n.LLM_MODEL_SERVER_ENDPOINT = strenv(LLM_ENDPOINT) |\n.LLM_VLLM_API_KEY = strenv(LLM_API_KEY)\n)' -i pipelines/chatqa/reference-external-endpoint.yaml\n\n# Check\n\nyq '.spec.nodes.root.steps[] | select(.name == \"Llm\")' pipelines/chatqa/reference-external-endpoint.yaml --no-colors\n",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Add Certs",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\n# Download certs\nexport CERT_PATH=\"$HOME/certs/fullchain1.pem\"\nexport KEY_PATH=\"$HOME/certs/privkey1.pem\"\nmkdir -p $HOME/certs\nwget -O $CERT_PATH http://10.55.251.38/workshop_staging/tradeshows/configuration/certificates/sslip.nutanixdemo.com/fullchain1.pem \nwget -O $KEY_PATH http://10.55.251.38/workshop_staging/tradeshows/configuration/certificates/sslip.nutanixdemo.com/privkey1.pem\n\n\n# Update config with certs\ncd $HOME/Enterprise-RAG/deployment\nyq e '.certs.autoGenerated=false' -i inventory/sample/config.yaml\nyq e '.certs.pathToCert=strenv(CERT_PATH)' -i inventory/sample/config.yaml\nyq e '.certs.pathToKey=strenv(KEY_PATH)' -i inventory/sample/config.yaml\n\n# Check\nyq e .certs inventory/sample/config.yaml --no-colors\n",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Configure Storage",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\nsource ~/.env\n\ncd $HOME/Enterprise-RAG/deployment\nkubectl patch storageclass nutanix-files -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'\nkubectl patch storageclass nutanix-volume -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"false\"}}}'\n\nyq e '.gmc.pvc.accessMode = \"ReadWriteMany\"' -i inventory/sample/config.yaml\n\nyq .install_csi inventory/sample/config.yaml --no-colors\nyq .gmc inventory/sample/config.yaml --no-colors\n",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Install Erag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\ncd $HOME/Enterprise-RAG/deployment\n\n/home/nutanix/Enterprise-RAG/deployment/erag-venv/bin/ansible-playbook -u $USER playbooks/application.yaml --tags configure,install -e @./inventory/sample/config.yaml",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "9ba44dc1_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "user",
+                            "name": "InstallEragOne",
+                            "description": "",
+                            "runbook": {
+                                "name": "aa2746c7_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "99eb1313_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [
+                                            {
+                                                "name": "Install eRAG",
+                                                "kind": "app_task"
+                                            }
+                                        ],
+                                        "variable_list": [],
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Install eRAG",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\nsource ~/.env\n\nif [[ @@{ERAG}@@ != \"true\" ]]; then\n    echo \"eRAG marked False or unset, skipping\"\n    exit 0\nfi\n\n# --- Variables ---\nREPO_DIR=\"$HOME/Enterprise-RAG\"\nDEPLOY_DIR=\"$REPO_DIR/deployment\"\nVENV=\"$DEPLOY_DIR/erag-venv\"\nCONFIG_FILE=\"inventory/sample/config.yaml\"\nSOLUTION_CONFIG_FILE=\"roles/application/pre_install/tasks/solution_config.yaml\"\n\n# --- Functions ---\n\nclone_erag_repo() {\n    echo \"--- Cloning eRAG Repo ---\"\n    if [ ! -d \"$REPO_DIR\" ]; then\n        git clone --branch $ERAG_VERSION --depth 1 https://github.com/opea-project/Enterprise-RAG \"$REPO_DIR\" \n    else\n        echo \"Repo already exists, skipping clone.\"\n    fi\n}\n\nconfigure_ansible_log() {\n    echo \"--- Configuring ansible log path ---\"\n    cd \"$DEPLOY_DIR\"\n    grep -q \"\\[defaults\\]\" ansible.cfg && \\\n        sed -i '/\\[defaults\\]/a log_path = ./ansible.log' ansible.cfg || \\\n        echo -e \"[defaults]\\nlog_path = ./ansible.log\" >> ansible.cfg\n}\n\nconfigure_config_yaml() {\n    echo \"--- Configuring config.yaml ---\"\n\n    cd \"$DEPLOY_DIR\"\n    yq e '.kubeconfig = strenv(PATH_TO_ERAG_KUBECFG)' -i \"$CONFIG_FILE\"\n    yq e '.FQDN = strenv(FQDN)' -i \"$CONFIG_FILE\"\n    yq e '.install_csi = \"nfs\"' -i \"$CONFIG_FILE\"\n    yq e '.ingress.service_type = \"LoadBalancer\"' -i \"$CONFIG_FILE\"\n    yq e '.balloons.enabled = false' -i \"$CONFIG_FILE\"\n    yq e '.registry = \"registry.nutanixdemo.com/bootcamps/intel-erag\"' -i \"$CONFIG_FILE\"\n\n    # Validation\n    yq e '.kubeconfig, .FQDN, .telemetry, .install_csi, .ingress, .registry' \"$CONFIG_FILE\" --no-colors\n}\n\nconfigure_domain_names() {\n    echo \"--- Configuring domain name prefixes in solution_config.yaml ---\"\n\n    cd \"$DEPLOY_DIR\"\t\n    yq -e \"(.[] | select(.name == \\\"Set facts for domain names if not defined\\\") | .\\\"ansible.builtin.set_fact\\\") |=\n      with_entries(\n        .value |= (\n          sub(\\\"'domainName': 'auth.'\\\"; \\\"'domainName': 'auth-'\\\") |\n          sub(\\\"'domainName': 'grafana.'\\\"; \\\"'domainName': 'grafana-'\\\") |\n          sub(\\\"'domainName': 'minio.'\\\"; \\\"'domainName': 'minio-'\\\") |\n          sub(\\\"'apiDomainName': 's3.'\\\"; \\\"'apiDomainName': 's3-'\\\")\n        )\n      )\" -i \"$SOLUTION_CONFIG_FILE\"\n}\n\nconfigure_venv() {\n    echo \"--- Configuring VENV ---\"\n    if [ ! -d \"$VENV\" ]; then\n        python3 -m venv \"$VENV\"\n    fi\n    \"$VENV/bin/python\" -m pip install --upgrade pip\n    \"$VENV/bin/pip\" install -r \"$DEPLOY_DIR/requirements.txt\"\n}\n\ninstall_ansible_collection() {\n    echo \"--- Installing Ansible collection ---\"\n    \"$VENV/bin/ansible-galaxy\" collection install -r \"$DEPLOY_DIR/requirements.yaml\" --upgrade\n}\n\nconfigure_llm_endpoint() {\n    echo \"--- Configuring LLM endpoint ---\"\n    export LLM_MODEL_NAME=\"llama31-8b-hf\"\n    export LLM_ENDPOINT=\"https://nai.tmelab.net/enterpriseai\"\n    export LLM_API_KEY=\"ee5975c3-78b6-4538-81d3-a186157c526d\"\n\n    cd \"$DEPLOY_DIR\"\n    yq e '.pipelines[0].samplePath = \"chatqa/reference-external-endpoint.yaml\"' -i \"$CONFIG_FILE\"\n    yq e '.pipelines[0].resourcesPath = \"chatqa/resources-reference-external-endpoint.yaml\"' -i \"$CONFIG_FILE\"\n\n    yq e '(.spec.nodes.root.steps[] | select(.name == \"Llm\")).internalService.config |= ( \n        .endpoint = \"/v1/chat/completions\" |\n        .LLM_MODEL_SERVER = \"vllm\" |\n        .LLM_MODEL_NAME = strenv(LLM_MODEL_NAME) | \n        .LLM_MODEL_SERVER_ENDPOINT = strenv(LLM_ENDPOINT) |\n        .LLM_VLLM_API_KEY = strenv(LLM_API_KEY)\n    )' -i \"pipelines/chatqa/reference-external-endpoint.yaml\"\n\n    yq '.spec.nodes.root.steps[] | select(.name == \"Llm\")' \"pipelines/chatqa/reference-external-endpoint.yaml\" --no-colors\n}\n\nadding_certs() {\n    echo \"--- Adding certs ---\"\n    export CERT_PATH=\"$HOME/certs/fullchain1.pem\"\n    export KEY_PATH=\"$HOME/certs/privkey1.pem\"\n    \n    mkdir -p \"$HOME/certs\"\n    wget -qO \"$CERT_PATH\" http://10.55.251.38/workshop_staging/tradeshows/configuration/certificates/sslip.nutanixdemo.com/fullchain1.pem \n    wget -qO \"$KEY_PATH\" http://10.55.251.38/workshop_staging/tradeshows/configuration/certificates/sslip.nutanixdemo.com/privkey1.pem\n\n    cd \"$DEPLOY_DIR\"\n    yq e '.certs.autoGenerated = false' -i \"$CONFIG_FILE\"\n    yq e '.certs.pathToCert = strenv(CERT_PATH)' -i \"$CONFIG_FILE\"\n    yq e '.certs.pathToKey = strenv(KEY_PATH)' -i \"$CONFIG_FILE\"\n    yq e .certs \"$CONFIG_FILE\" --no-colors\n}\n\nconfigure_storage() {\n    echo \"--- Configuring storage ---\"\n    kubectl patch storageclass nutanix-files -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'\n    kubectl patch storageclass nutanix-volume -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"false\"}}}'\n\n    cd \"$DEPLOY_DIR\"\n    yq e '.gmc.pvc.accessMode = \"ReadWriteMany\"' -i \"$CONFIG_FILE\"\n    yq e '.install_csi, .gmc' \"$CONFIG_FILE\" --no-colors\n}\n\ninstall_erag() {\n    echo \"--- Installing erag ---\"\n    cd \"$DEPLOY_DIR\"\n    \"$VENV/bin/ansible-playbook\" -u \"$USER\" playbooks/application.yaml \\\n        --tags configure,install \\\n        -e \"@./$CONFIG_FILE\"\n}\n\n# --- Main Logic ---\n\necho \"Starting eRAG installation process...\"\n\nclone_erag_repo\nconfigure_ansible_log\nconfigure_config_yaml\nconfigure_domain_names\nconfigure_venv\ninstall_ansible_collection\nconfigure_llm_endpoint\nadding_certs\nconfigure_storage\ninstall_erag\n\necho \"Installation Complete!\"",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "99eb1313_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "user",
+                            "name": "Test",
+                            "description": "",
+                            "runbook": {
+                                "name": "15f87c9b_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "8eb84184_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": [
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Task 1",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Task 2",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                }
+                                            ]
+                                        },
+                                        "child_tasks_local_reference_list": [
+                                            {
+                                                "name": "Task 1",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Task 2",
+                                                "kind": "app_task"
+                                            }
+                                        ],
+                                        "variable_list": [],
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Task 1",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\nif [[ @@{ERAG}@@ != \"true\" ]]; then\n    echo \"eRAG marked False or unset, skipping\"\n    exit 0\nfi\n\necho \"Starting eRAG installation process...\"",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Task 2",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "echo \"Hi\"",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "8eb84184_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "user",
+                            "name": "UninstallErag",
+                            "description": "",
+                            "runbook": {
+                                "name": "d2fbee5e_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "02ead6bd_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [
+                                            {
+                                                "name": "Uninstall Script",
+                                                "kind": "app_task"
+                                            }
+                                        ],
+                                        "variable_list": [],
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Uninstall Script",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n\nsource ~/.env\n\nif [[ @@{ERAG}@@ != \"true\" ]]; then\n    echo \"eRAG marked False or unset, skipping\"\n    exit 0\nfi\n\n# --- Variables ---\nREPO_DIR=\"$HOME/Enterprise-RAG\"\nDEPLOY_DIR=\"$REPO_DIR/deployment\"\nVENV=\"$DEPLOY_DIR/erag-venv\"\nCONFIG_FILE=\"inventory/sample/config.yaml\"\n\nuninstall_erag() {\n    echo \"--- Installing erag ---\"\n    cd \"$DEPLOY_DIR\"\n    \"$VENV/bin/ansible-playbook\" -u \"$USER\" playbooks/application.yaml \\\n        --tags uninstall \\\n        -e \"@./$CONFIG_FILE\"        \n}\n\necho \"Starting eRAG uninstallation process...\"\n\nuninstall_erag\n\necho \"Uninstall Complete!\"\n\n",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "02ead6bd_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        }
+                    ],
+                    "depends_on_list": [],
+                    "port_list": [],
+                    "singleton": false,
+                    "tier": ""
+                }
+            ],
+            "published_service_definition_list": [],
+            "substrate_definition_list": [
+                {
+                    "type": "AHV_VM",
+                    "name": "VM1",
+                    "description": "",
+                    "variable_list": [],
+                    "action_list": [],
+                    "create_spec": {
+                        "type": "",
+                        "name": "@@{calm_application_name}@@-boot",
+                        "availability_zone_reference": null,
+                        "backup_policy": null,
+                        "cluster_reference": {
+                            "type": "",
+                            "kind": "cluster",
+                            "name": "PHX-MKT231",
+                            "uuid": "00064600-82bb-0648-56ed-946dae484d10"
+                        },
+                        "resources": {
+                            "type": "",
+                            "nic_list": [
+                                {
+                                    "type": "",
+                                    "nic_type": "NORMAL_NIC",
+                                    "subnet_reference": {
+                                        "type": "",
+                                        "kind": "subnet",
+                                        "name": "",
+                                        "uuid": "bd73548f-78ee-40a4-853b-7e14f8134635"
+                                    },
+                                    "network_function_nic_type": "INGRESS",
+                                    "mac_address": "",
+                                    "ip_endpoint_list": [],
+                                    "network_function_chain_reference": null,
+                                    "vpc_reference": null
+                                }
+                            ],
+                            "power_state": "ON",
+                            "guest_tools": null,
+                            "num_vcpus_per_socket": 1,
+                            "num_sockets": 4,
+                            "memory_size_mib": 8192,
+                            "gpu_list": [],
+                            "parent_reference": null,
+                            "hardware_clock_timezone": "",
+                            "account_uuid": "f23b2b86-8949-4af3-aca4-2512cf6d89c9",
+                            "guest_customization": {
+                                "type": "",
+                                "cloud_init": {
+                                    "type": "",
+                                    "meta_data": "",
+                                    "user_data": "#cloud-config\nusers:\n  - name: @@{CRED_SSH.username}@@\n    lock_passwd: false\n    shell: /bin/bash\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: [sudo, admin, docker]\n    ssh_authorized_keys:\n      - @@{CRED_SSH.public_key}@@\n\nssh_pwauth: false\n\npackage_update: true\npackage_upgrade: false\n\npackages:\n  - ca-certificates\n  - curl\n  - gnupg\n  - lsb-release\n  - apt-transport-https\n  - software-properties-common\n  - python3-pip\n\nwrite_files:\n  - path: /usr/local/bin/bootstrap.sh\n    permissions: \"0755\"\n    content: |\n      #!/usr/bin/env bash\n      set -euo pipefail\n      APT_OPTS='-o Dpkg::Options::=--force-confnew'\n      APT_FLAGS='-y --allow-change-held-packages'\n      echo \"Waiting for apt to be ready...\"\n      # Wait for apt locks (cloud-init already running, so no need for cloud-init wait)\n      while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 \\\n         || fuser /var/lib/apt/lists/lock >/dev/null 2>&1 \\\n         || fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do\n        sleep 2\n      done\n      export DEBIAN_FRONTEND=noninteractive\n      # Docker repo\n      install -m 0755 -d /etc/apt/keyrings\n      curl -fsSL https://download.docker.com/linux/ubuntu/gpg \\\n        | gpg --dearmor -o /etc/apt/keyrings/docker.gpg\n      chmod a+r /etc/apt/keyrings/docker.gpg\n      echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \\\n      https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" \\\n      > /etc/apt/sources.list.d/docker.list\n      apt-get $APT_OPTS $APT_FLAGS -y update\n      apt-get $APT_OPTS $APT_FLAGS install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin ansible python3-venv sshpass\n      systemctl enable docker\n      systemctl start docker\n      # Remove any existing Kubernetes repo definitions\n      grep -rl \"pkgs.k8s.io\" /etc/apt/ | xargs -r rm -f\n      \n      install -m 0755 -d /etc/apt/keyrings\n      curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg\n      echo \"deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /\" > /etc/apt/sources.list.d/kubernetes.list\n      apt-get $APT_OPTS $APT_FLAGS -y update\n      apt-get $APT_OPTS $APT_FLAGS install -y kubectl \n      # Helm\n      curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash\n      # Python deps - errors out with error: externally-managed-environment\n      # pip3 install --no-cache-dir python-dotenv boto3\n\nruncmd:\n  - /usr/local/bin/bootstrap.sh"
+                                },
+                                "sysprep": null
+                            },
+                            "boot_config": {
+                                "type": "",
+                                "boot_device": {
+                                    "type": "",
+                                    "disk_address": {
+                                        "type": "",
+                                        "device_index": 0,
+                                        "adapter_type": "SCSI"
+                                    }
+                                },
+                                "mac_address": "",
+                                "boot_type": "LEGACY"
+                            },
+                            "vtpm_config": null,
+                            "disk_list": [
+                                {
+                                    "type": "",
+                                    "data_source_reference": {
+                                        "type": "",
+                                        "kind": "image",
+                                        "name": "nkp-ubuntu-24.04-release-cis-1.34.1-20251206061851.qcow2",
+                                        "uuid": "16ef2a1b-96c2-4ee5-b0ad-472fade92454"
+                                    },
+                                    "volume_group_reference": null,
+                                    "device_properties": {
+                                        "type": "",
+                                        "disk_address": {
+                                            "type": "",
+                                            "device_index": 0,
+                                            "adapter_type": "SCSI"
+                                        },
+                                        "device_type": "DISK"
+                                    },
+                                    "disk_size_mib": 81920
+                                }
+                            ],
+                            "serial_port_list": []
+                        },
+                        "categories": {}
+                    },
+                    "os_type": "Linux",
+                    "readiness_probe": {
+                        "login_credential_local_reference": {
+                            "name": "CRED_SSH",
+                            "kind": "app_credential"
+                        },
+                        "connection_type": "SSH",
+                        "connection_port": 22,
+                        "delay_secs": "0",
+                        "retries": "5",
+                        "address": "@@{platform.status.resources.nic_list[0].ip_endpoint_list[0].ip}@@",
+                        "disable_readiness_probe": false,
+                        "connection_protocol": ""
+                    }
+                }
+            ],
+            "package_definition_list": [
+                {
+                    "type": "DEB",
+                    "name": "Package1",
+                    "description": "",
+                    "variable_list": [],
+                    "action_list": [],
+                    "service_local_reference_list": [
+                        {
+                            "name": "Service1",
+                            "kind": "app_service"
+                        }
+                    ],
+                    "version": "",
+                    "options": {
+                        "type": "",
+                        "install_runbook": {
+                            "name": "61e20399_runbook",
+                            "description": "",
+                            "task_definition_list": [
+                                {
+                                    "type": "DAG",
+                                    "name": "b4ce572c_dag",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "",
+                                        "edges": [
+                                            {
+                                                "type": "",
+                                                "from_task_reference": {
+                                                    "name": "Install Deps",
+                                                    "kind": "app_task"
+                                                },
+                                                "to_task_reference": {
+                                                    "name": "Install eRAG One",
+                                                    "kind": "app_task"
+                                                },
+                                                "edge_type": "user_defined"
+                                            }
+                                        ]
+                                    },
+                                    "child_tasks_local_reference_list": [
+                                        {
+                                            "name": "Install Deps",
+                                            "kind": "app_task"
+                                        },
+                                        {
+                                            "name": "Install eRAG One",
+                                            "kind": "app_task"
+                                        }
+                                    ],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Package1",
+                                        "kind": "app_package"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                },
+                                {
+                                    "type": "CALL_RUNBOOK",
+                                    "name": "Install Deps",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "CALL_RUNBOOK",
+                                        "runbook_reference": {
+                                            "name": "0ee03ef5_runbook",
+                                            "kind": "app_runbook"
+                                        },
+                                        "inarg_list": []
+                                    },
+                                    "child_tasks_local_reference_list": [],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Service1",
+                                        "kind": "app_service"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                },
+                                {
+                                    "type": "CALL_RUNBOOK",
+                                    "name": "Install eRAG One",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "CALL_RUNBOOK",
+                                        "runbook_reference": {
+                                            "name": "aa2746c7_runbook",
+                                            "kind": "app_runbook"
+                                        },
+                                        "inarg_list": []
+                                    },
+                                    "child_tasks_local_reference_list": [],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Service1",
+                                        "kind": "app_service"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                }
+                            ],
+                            "main_task_local_reference": {
+                                "name": "b4ce572c_dag",
+                                "kind": "app_task"
+                            },
+                            "variable_list": []
+                        },
+                        "uninstall_runbook": {
+                            "name": "79069a87_runbook",
+                            "description": "",
+                            "task_definition_list": [
+                                {
+                                    "type": "DAG",
+                                    "name": "6e9c7d88_dag",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "",
+                                        "edges": []
+                                    },
+                                    "child_tasks_local_reference_list": [
+                                        {
+                                            "name": "Uninstall ERAG",
+                                            "kind": "app_task"
+                                        }
+                                    ],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Package1",
+                                        "kind": "app_package"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                },
+                                {
+                                    "type": "CALL_RUNBOOK",
+                                    "name": "Uninstall ERAG",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "CALL_RUNBOOK",
+                                        "runbook_reference": {
+                                            "name": "d2fbee5e_runbook",
+                                            "kind": "app_runbook"
+                                        },
+                                        "inarg_list": []
+                                    },
+                                    "child_tasks_local_reference_list": [],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Service1",
+                                        "kind": "app_service"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                }
+                            ],
+                            "main_task_local_reference": {
+                                "name": "6e9c7d88_dag",
+                                "kind": "app_task"
+                            },
+                            "variable_list": []
+                        },
+                        "upgrade_runbook": {}
+                    }
+                }
+            ],
+            "app_profile_list": [
+                {
+                    "name": "Default",
+                    "description": "",
+                    "variable_list": [
+                        {
+                            "type": "LOCAL",
+                            "name": "DOMAIN",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": ""
+                            },
+                            "value": "ntnxlab.local"
+                        },
+                        {
+                            "type": "SECRET",
+                            "name": "SSH_PASSWORD",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": "SECRET",
+                                "is_secret_modified": false,
+                                "secret_reference": {}
+                            },
+                            "value": "ab3LL/kURInZn9bIAtA0ycCdoP2RlTTBklcvgpEgxsSLpv8CH1eb8X6jYZs=:utf-8"
+                        },
+                        {
+                            "type": "LOCAL",
+                            "name": "NKP_BINARY_URL",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": ""
+                            },
+                            "value": "http://10.55.251.38/workshop_staging/tradeshows/software/nutanix/kubernetes/nkp/nkp_v2.16.1_linux_amd64.tar.gz"
+                        },
+                        {
+                            "type": "LOCAL",
+                            "name": "NAI_VM_PW",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": ""
+                            },
+                            "value": "dotNext2025!"
+                        },
+                        {
+                            "type": "LOCAL",
+                            "name": "ERAG",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": ""
+                            },
+                            "value": "true"
+                        },
+                        {
+                            "type": "LOCAL",
+                            "name": "ERAG_VERSION",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": ""
+                            },
+                            "value": "release-2.0.1"
+                        },
+                        {
+                            "type": "LOCAL",
+                            "name": "WL01_LB_IP_RANGE_ENDS",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": ""
+                            },
+                            "value": "10.42.231.151"
+                        }
+                    ],
+                    "action_list": [
+                        {
+                            "type": "user",
+                            "name": "Uninstall Erag",
+                            "description": "",
+                            "runbook": {
+                                "name": "5c526d1d_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "5e36309b_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [
+                                            {
+                                                "name": "UninstallErag",
+                                                "kind": "app_task"
+                                            }
+                                        ],
+                                        "variable_list": [],
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "CALL_RUNBOOK",
+                                        "name": "UninstallErag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "CALL_RUNBOOK",
+                                            "runbook_reference": {
+                                                "name": "d2fbee5e_runbook",
+                                                "kind": "app_runbook"
+                                            },
+                                            "inarg_list": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "5e36309b_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        }
+                    ],
+                    "deployment_create_list": [
+                        {
+                            "type": "GREENFIELD",
+                            "name": "deployment_329638b2",
+                            "description": "",
+                            "variable_list": [],
+                            "action_list": [],
+                            "depends_on_list": [],
+                            "min_replicas": "1",
+                            "max_replicas": "1",
+                            "default_replicas": "1",
+                            "package_local_reference_list": [
+                                {
+                                    "name": "Package1",
+                                    "kind": "app_package"
+                                }
+                            ],
+                            "substrate_local_reference": {
+                                "name": "VM1",
+                                "kind": "app_substrate"
+                            },
+                            "published_service_local_reference_list": []
+                        }
+                    ],
+                    "snapshot_config_list": [],
+                    "restore_config_list": [],
+                    "environment_reference_list": [],
+                    "application_url": "",
+                    "patch_list": []
+                }
+            ],
+            "credential_definition_list": [
+                {
+                    "type": "KEY",
+                    "name": "CRED_SSH",
+                    "description": "",
+                    "username": "nutanix",
+                    "secret": {
+                        "attrs": {
+                            "secret_reference": {},
+                            "is_secret_modified": true
+                        },
+                        "value": "4K9iWgCmKqAXbBZ59N6otTaTIphDlnHAMrDdPqWQ8FsKIewnQlVoGMCwPYjCJJnHcHYJAm4U4b+7u9meHP+PkKNuT0kilTw6NW9nYzAvS1hdbAGet5TrfH9stm8L2IGh+Cw4HvPVRMcXlkQ4RS0JQ8J7EXmxo6/YMFhK24LIJBc9TcjJ8ATWLIRnzCp/xGdp9/XWeKllKbSRqjt0ih9tfPRm0+746e9ofHX8xaKQiuRgeKtIDzFLy0Q2N+neaQ0cOriByA5Siyrp4ON2ag3DOT06h9yoCtEDGH30hCfWvTnI+9r2VYvZCBNjzWmCzQ6MQjggmqNBSU1T4qoyFuAvD4NDhWFyWm+9Jzt6Jv6jhP0EV2AooUcLBLGrxwelGQlRqpkD3gQ+vHp17OasSjRbQw882u0MMlwL/eotDII/QxjRyzskGGeIroS1GfdmKGhpUWJP8Gj6HGjApkjJWN8/KbiNczH+4MPTU9rRHU0k/QldtparFT/3BBDAVY5OYRjHXw09P4vJ16a/9cEE+Pvo5D5sKDTFeAVW0Q8HLD6yyCE+uJU0mkkxKrm1FQfnISkjSFPFfUWjHE8hYtXaR4y+63pV0DKDY4udIeE05hTaEmWkw/5iqyguL9Ba83WXVUQR6JnNKbpQ7+e4nT3cylIVcp9lvuMkMPcxHYAsBjqI8a004czFdFAGiwwf2hacZeRg4J5DbnbOh8ZEjOP9qetb46rmm5oMKU4Fg/zNNY2CIcoe4gWwlPumvaOqV9N0JYOLn4UqUulBu3uA2KTkN/wFJBBDCBnHxO0pPsZZLv9ZikaGLEu71Ew2qkmWhF8C/GrmZ+kW3VGOnm5BnKmFY2vZrOfhaODfIedWkre5BRbsJJOVnGAS5cwzO6e1seH+9zIEpccLtZRfvqTAA+4yxzeFGyF5p6W7SFScCcoF/XBJUpyTY1ZU5oC/cJ8EC/cDRhGbnOvigBUUNd4XLCXmTTW8XXdvAZUVQGPr8HQhfFe4U2qcRgq8MxkVl9WNPNEnWV9tYKg51I9DPnjZBbXXE+73KbqEWx58EVemOo1cFkWDQpnJPXYsESWUoWVAUystry6J53PD1WFbAI7J5gkoSHOyvhB4ZfstoBEx5VaiVLb5IKG+N92SgJAbxOOMQ+6BpmFgLLDEYGLVklXkX1vl+jMu7mOSnrDaqtuvlTnP9ctojnco5Xqbs8tgtBXMusNMMEnq6qigsMDw/nnfcswBNoUE8nMfWggukOz2YWzpgft1Let7ROUa9CQ/c9xOtBA0ypbgulm9tWSx6iX+JCOi5oo1TAxposTkHMWwpdcb9h2WzW3mGZplhHdMN/oZEQoLlXHnjLoAVnIcsXMSnezLstKTMn6d07Vu6jWXiit/cg7UPA63cfR9b2hAX1A5hD6hbQyJTTYTQXzKV+htIyInlSlzYNQAu8vfnp9X82kD6MarBxqUOBaGaKQLLIG/Qh4DOM8LVeJ7gEgu8207f70F+mud/91fTF5AfHaH752r+r1vUPLdsPSH1F+kcV2tyeVrtyAxY4q6Yb/PRy+PIrm5xkmBvY/g3MQGir+acgXMJC4z9dFvcNtmtMby0as3/0z99NJkVyWU2UMH8h3yx8RK66LbTrPfh0ZPOE4b3lN3qfHVgk+AohxJ9x7ak5ynZoZPQUxYS2ruY1ORSVNuhizomwjcUypchCfQZrdVi8DfxaSsvrkm6SN2kYFDVarT2g6sR1W3WSV/uJH6J2AjNiqdrxuelmvDcuzTnCeYVRwlxICWiOjQM2Egq9vONniJG2geYWlIQsU9o+gXRu4wSfxGYSvdZbUzovuSQz+LPUXDZcoGMHpBypYptYDJ7Dl36aMVJj9uzrmIXN2M/nxiceqgG+UhI003RqWmc5gKmu/sMhhPec7IWIba9HjOrOrjYNJFIsKacdOuhglKIUK3PxEIWU2Nu9TpoMCzx4JSwm6dz4e7IDAXjo8AVQbLQPz6HPca/JzSd6BemTapzRSo1ozfXIubptNddDFcAkT3uzDsjHvEY3fn4Gd+fDIsQpgJzRzZ6FGwCMbNhY8/R5EU+W098uvgyWHLH2jcaKyOXgRyO2GK8+dIN8s8SkCISy1qZXchAoGuqma7SSg3fv83Envl3yCsDzQOnXMqn7+rQH/TUlLu0duT4SSRJnKDxZt5+cIO8t4tifeoW4Eeswmq8CpMYtTCyk98TTXs5fMTwFQF/oxdy38WzCqbZpJCEkgnZDF9d4ARuJ0T2I4wnC53U9BPD8gPPY8Ngm954kdsMDex9aKF9dXcigy+0lcmxMpEHahlvtW2+qwOrJBIdlDoAj9kQV+ZuCMPJiBngXqjEq+9sLcfIQfxJnv5qnZxXM7ZFsij9mUtdnQvGpIrcoodlSXlP0AvXYQ+SGL/b7YU1nDPp/F1WdxZfXlu+WV+pXzp9wOo2DWGjOSvNIUljpQwWIQHkfggxknkPraXM6EjCdZXq+3UlsE0UECi7YsHIQXCJ+erT6ZxLtJ6m8VLKjDsoZ5pTBAr3L0P6TeTmozQ+xlVeHMw/mrKgQvHOpAfXd1/kWCtzRw56CBc/WM0vYo5qV1FQGBZFRGi4M6Uug1siLYDLACQ9WZTMdeqULaiTJmhkJwiOBqmqekQJ+22P4PWsmKJBEXxPtN5X36ESZ0LoUqgEQA4TCBcf6PekeLz9K8Aj6Trr+Ul8nz92ItAMJxiLmpcAADqvk3vnG6GBIRx58NbmMuIJ7h+l70utQfFmhZ6m3zd8HO5wFJ/T2SLYOrJodO3XtIzQhk5w3RnmZNjleelxG22y6fyzJg5L0//LbPlnPFg8SUa/t6KiWOvmg5Ng3w/+fWX8j54Pbr4bc6OSIqa5S9SkXpYwcDXlzIdy0OcMYfSectBxQsbd3UQz0+/UiwBkXATi4dAxAmiEty6wtD/kU1YiH2iuz2VSFYtMWgDJjVzz8g9Ogk8OeDDx4KG6nn9Ug0ccE/G+wD8rgkjDy+yQ7p8cA6QBHRPogMIS3BuTZqDevIEtjpx6lEPJVRc+cXL+4kcuAXXe+V6cTCdsL9apwhxhkEM/Wdcefal8OSjwGmNtgPhQMxVVPcXABgDujjsbsLSdoT34yKAtHRqaZfSqaoUWfiQPr3MaKsc5NhRdYEXtzd8JNRLm84QjIvPiVqZytctJYgN9X7H81RMWwy5MhYKgTs0VI9QBWsG1q+TsA8slpCa6mktPrrDDh19EYQpbIMatrzhie3zozP9ZD4fJ5RFx9CLgAXIQYTpPoeW9hZR4VKpnbkiJW11u+ByfPPTJrsSZy7k4etkEt6YYDKcJwEe8R2gVjAHarz4uxO2:utf-8"
+                    },
+                    "cred_class": "static"
+                }
+            ],
+            "default_credential_local_reference": {
+                "name": "CRED_SSH",
+                "kind": "app_credential"
+            },
+            "type": "USER",
+            "client_attrs": {
+                "deployment_329638b2": {
+                    "x": 869.9067865026759,
+                    "y": 401.0746851158822
+                }
+            }
+        }
+    },
+    "api_version": "3.0",
+    "product_version": "4.2.1",
+    "metadata": {
+        "last_update_time": "1771483730022537",
+        "creation_time": "1770229832747865",
+        "spec_version": 129,
+        "name": "erag-setup",
+        "kind": "blueprint"
+    },
+    "contains_secrets": true
+}

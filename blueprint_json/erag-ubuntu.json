@@ -1,0 +1,709 @@
+{
+    "status": {},
+    "spec": {
+        "name": "erag-ubuntu",
+        "description": "Ubuntu VM for setting up eRAG",
+        "resources": {
+            "service_definition_list": [
+                {
+                    "name": "Service1",
+                    "description": "",
+                    "variable_list": [],
+                    "action_list": [
+                        {
+                            "type": "system",
+                            "name": "action_create",
+                            "description": "System action for creating an application",
+                            "runbook": {
+                                "name": "9de28053_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "f11b97d9_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "f11b97d9_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_delete",
+                            "description": "System action for deleting an application. Deletes created VMs as well",
+                            "runbook": {
+                                "name": "c2c29eff_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "798e7f93_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "798e7f93_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_start",
+                            "description": "System action for starting an application",
+                            "runbook": {
+                                "name": "5245ef7d_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "76f3dc0b_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "76f3dc0b_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_stop",
+                            "description": "System action for stopping an application",
+                            "runbook": {
+                                "name": "683ac5dd_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "ed884349_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "ed884349_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "system",
+                            "name": "action_restart",
+                            "description": "System action for restarting an application",
+                            "runbook": {
+                                "name": "d2724d8c_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "02418df2_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "02418df2_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        },
+                        {
+                            "type": "user",
+                            "name": "InstallDeps",
+                            "description": "",
+                            "runbook": {
+                                "name": "0ee03ef5_runbook",
+                                "description": "",
+                                "task_definition_list": [
+                                    {
+                                        "type": "DAG",
+                                        "name": "e0da6b81_dag",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "edges": [
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Install Tools",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Clone Git Repo",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Clone Git Repo",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Install requirements in venv",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                },
+                                                {
+                                                    "type": "",
+                                                    "from_task_reference": {
+                                                        "name": "Install requirements in venv",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "to_task_reference": {
+                                                        "name": "Install Ansible Collection",
+                                                        "kind": "app_task"
+                                                    },
+                                                    "edge_type": "user_defined"
+                                                }
+                                            ]
+                                        },
+                                        "child_tasks_local_reference_list": [
+                                            {
+                                                "name": "Install Tools",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Clone Git Repo",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Install requirements in venv",
+                                                "kind": "app_task"
+                                            },
+                                            {
+                                                "name": "Install Ansible Collection",
+                                                "kind": "app_task"
+                                            }
+                                        ],
+                                        "variable_list": [],
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Install Tools",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "sudo apt-get -y install ansible\nsudo apt-get -y install python3-venv\n\ncurl -sLS https://get.arkade.dev| sudo sh\nsudo chown -R nutanix:nutanix /usr/local/bin/arkade\n\n## install utils\narkade get \\\nkubectx \\\nkubens \\\nkrew \\\nstern\n\n## install yq\nsudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq\nsudo chown -R nutanix:nutanix /usr/bin/yq\nsudo chmod +x /usr/bin/yq\n\n## install k9s\ncurl -sS https://webinstall.dev/k9s | bash\n\n## set path for arkade and krew kubectl plugin binaries\nexport PATH=\"$HOME/.arkade/bin/:$HOME/.krew/bin:$PATH\"\n\necho \"alias k=$(which kubectl)\" >> $HOME/.bashrc\necho \"alias kns=$(which kubens)\" >> $HOME/.bashrc",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Clone Git Repo",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "git clone https://github.com/opea-project/Enterprise-RAG\ncd Enterprise-RAG/deployment\nyq e '.kubeconfig = \"/home/nutanix/config\"' -i inventory/sample/config.yaml\nyq e '.FQDN = \"sslip.nutanixdemo.com\"' -i inventory/sample/config.yaml\nyq e '.telemetry.enabled = false' -i inventory/sample/config.yaml",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Install requirements in venv",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "set -e\n\necho \"Working dir: $PWD\"\ncd $HOME/Enterprise-RAG/deployment\n\nVENV=\"$HOME/Enterprise-RAG/deployment/erag-venv\"\n\nif [ ! -d \"$VENV\" ]; then\n  python3 -m venv \"$VENV\"\nfi\n\n$VENV/bin/python -m pip install --upgrade pip\n$VENV/bin/pip install -r requirements.txt",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    },
+                                    {
+                                        "type": "EXEC",
+                                        "name": "Install Ansible Collection",
+                                        "description": "",
+                                        "attrs": {
+                                            "type": "",
+                                            "script": "#echo \"Working dir: $PWD\"\n#cd $HOME/Enterprise-RAG/deployment\n\n#ansible-galaxy collection install -r requirements.yaml --upgrade",
+                                            "script_type": "sh",
+                                            "command_line_args": "",
+                                            "exit_status": []
+                                        },
+                                        "child_tasks_local_reference_list": [],
+                                        "variable_list": [],
+                                        "target_any_local_reference": {
+                                            "name": "Service1",
+                                            "kind": "app_service"
+                                        },
+                                        "timeout_secs": "0",
+                                        "retries": "0",
+                                        "inherit_target": false,
+                                        "status_map_list": []
+                                    }
+                                ],
+                                "main_task_local_reference": {
+                                    "name": "e0da6b81_dag",
+                                    "kind": "app_task"
+                                },
+                                "variable_list": []
+                            },
+                            "critical": false
+                        }
+                    ],
+                    "depends_on_list": [],
+                    "port_list": [],
+                    "singleton": false,
+                    "tier": ""
+                }
+            ],
+            "published_service_definition_list": [],
+            "substrate_definition_list": [
+                {
+                    "type": "AHV_VM",
+                    "name": "VM1",
+                    "description": "",
+                    "variable_list": [],
+                    "action_list": [],
+                    "create_spec": {
+                        "type": "",
+                        "name": "vm-@@{calm_array_index}@@-@@{calm_time}@@",
+                        "availability_zone_reference": null,
+                        "backup_policy": null,
+                        "cluster_reference": {
+                            "type": "",
+                            "kind": "cluster",
+                            "name": "PHX-MKT231",
+                            "uuid": "00064600-82bb-0648-56ed-946dae484d10"
+                        },
+                        "resources": {
+                            "type": "",
+                            "nic_list": [
+                                {
+                                    "type": "",
+                                    "nic_type": "NORMAL_NIC",
+                                    "subnet_reference": {
+                                        "type": "",
+                                        "kind": "subnet",
+                                        "name": "",
+                                        "uuid": "bd73548f-78ee-40a4-853b-7e14f8134635"
+                                    },
+                                    "network_function_nic_type": "INGRESS",
+                                    "mac_address": "",
+                                    "ip_endpoint_list": [],
+                                    "network_function_chain_reference": null,
+                                    "vpc_reference": null
+                                }
+                            ],
+                            "power_state": "ON",
+                            "guest_tools": null,
+                            "num_vcpus_per_socket": 1,
+                            "num_sockets": 4,
+                            "memory_size_mib": 8192,
+                            "gpu_list": [],
+                            "parent_reference": null,
+                            "hardware_clock_timezone": "",
+                            "account_uuid": "f23b2b86-8949-4af3-aca4-2512cf6d89c9",
+                            "guest_customization": {
+                                "type": "",
+                                "cloud_init": {
+                                    "type": "",
+                                    "meta_data": "",
+                                    "user_data": "#cloud-config\nhostname: @@{name}@@\nfqdn: \"@@{name}@@.@@{DOMAIN}@@\"\nprefer_fqdn_over_hostname: true\nmanage_etc_hosts: true\nssh_pwauth: true\nusers:\n  - name: @@{CRED_SSH.username}@@\n    shell: /bin/bash\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    ssh_authorized_keys:\n      - @@{CRED_SSH.public_key}@@\nchpasswd:\n  expire: false\n  users:\n    - name: @@{CRED_SSH.username}@@\n      password: @@{SSH_PASSWORD}@@\n      type: text\npackage_update: true\npackage_upgrade: true\nruncmd:\n  # Install base dependencies\n  - apt-get update\n  - apt-get install -y ca-certificates curl gnupg lsb-release apt-transport-https software-properties-common\n  # Install Docker (official repo)\n  - install -m 0755 -d /etc/apt/keyrings\n  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg\n  - chmod a+r /etc/apt/keyrings/docker.gpg\n  - echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" > /etc/apt/sources.list.d/docker.list\n  - apt-get update\n  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin\n  - systemctl enable docker\n  - systemctl start docker\n  # Add your user to docker group\n  - usermod -aG docker @@{CRED_SSH.username}@@\n  # Install kubectl\n  - curl -Lo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl\n  - chmod +x /usr/local/bin/kubectl\n  # Install Helm\n  - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash\n  # Python packages\n  - apt-get install -y python3-pip\n  - pip3 install python-dotenv boto3"
+                                },
+                                "sysprep": null
+                            },
+                            "boot_config": {
+                                "type": "",
+                                "boot_device": {
+                                    "type": "",
+                                    "disk_address": {
+                                        "type": "",
+                                        "device_index": 0,
+                                        "adapter_type": "SCSI"
+                                    }
+                                },
+                                "mac_address": "",
+                                "boot_type": "LEGACY"
+                            },
+                            "vtpm_config": null,
+                            "disk_list": [
+                                {
+                                    "type": "",
+                                    "data_source_reference": {
+                                        "type": "",
+                                        "kind": "image",
+                                        "name": "nkp-ubuntu-24.04-release-cis-1.34.1-20251206061851.qcow2",
+                                        "uuid": "16ef2a1b-96c2-4ee5-b0ad-472fade92454"
+                                    },
+                                    "volume_group_reference": null,
+                                    "device_properties": {
+                                        "type": "",
+                                        "disk_address": {
+                                            "type": "",
+                                            "device_index": 0,
+                                            "adapter_type": "SCSI"
+                                        },
+                                        "device_type": "DISK"
+                                    },
+                                    "disk_size_mib": 81920
+                                }
+                            ],
+                            "serial_port_list": []
+                        },
+                        "categories": {}
+                    },
+                    "os_type": "Linux",
+                    "readiness_probe": {
+                        "login_credential_local_reference": {
+                            "name": "CRED_SSH",
+                            "kind": "app_credential"
+                        },
+                        "connection_type": "SSH",
+                        "connection_port": 22,
+                        "delay_secs": "0",
+                        "retries": "5",
+                        "address": "@@{platform.status.resources.nic_list[0].ip_endpoint_list[0].ip}@@",
+                        "disable_readiness_probe": false,
+                        "connection_protocol": ""
+                    }
+                }
+            ],
+            "package_definition_list": [
+                {
+                    "type": "DEB",
+                    "name": "Package1",
+                    "description": "",
+                    "variable_list": [],
+                    "action_list": [],
+                    "service_local_reference_list": [
+                        {
+                            "name": "Service1",
+                            "kind": "app_service"
+                        }
+                    ],
+                    "version": "",
+                    "options": {
+                        "type": "",
+                        "install_runbook": {
+                            "name": "61e20399_runbook",
+                            "description": "",
+                            "task_definition_list": [
+                                {
+                                    "type": "DAG",
+                                    "name": "b4ce572c_dag",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "",
+                                        "edges": []
+                                    },
+                                    "child_tasks_local_reference_list": [
+                                        {
+                                            "name": "Install Dependencies",
+                                            "kind": "app_task"
+                                        }
+                                    ],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Package1",
+                                        "kind": "app_package"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                },
+                                {
+                                    "type": "CALL_RUNBOOK",
+                                    "name": "Install Dependencies",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "CALL_RUNBOOK",
+                                        "runbook_reference": {
+                                            "name": "0ee03ef5_runbook",
+                                            "kind": "app_runbook"
+                                        },
+                                        "inarg_list": []
+                                    },
+                                    "child_tasks_local_reference_list": [],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Service1",
+                                        "kind": "app_service"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                }
+                            ],
+                            "main_task_local_reference": {
+                                "name": "b4ce572c_dag",
+                                "kind": "app_task"
+                            },
+                            "variable_list": []
+                        },
+                        "uninstall_runbook": {
+                            "name": "79069a87_runbook",
+                            "description": "",
+                            "task_definition_list": [
+                                {
+                                    "type": "DAG",
+                                    "name": "6e9c7d88_dag",
+                                    "description": "",
+                                    "attrs": {
+                                        "type": "",
+                                        "edges": []
+                                    },
+                                    "child_tasks_local_reference_list": [],
+                                    "variable_list": [],
+                                    "target_any_local_reference": {
+                                        "name": "Package1",
+                                        "kind": "app_package"
+                                    },
+                                    "timeout_secs": "0",
+                                    "retries": "0",
+                                    "inherit_target": false,
+                                    "status_map_list": []
+                                }
+                            ],
+                            "main_task_local_reference": {
+                                "name": "6e9c7d88_dag",
+                                "kind": "app_task"
+                            },
+                            "variable_list": []
+                        },
+                        "upgrade_runbook": {}
+                    }
+                }
+            ],
+            "app_profile_list": [
+                {
+                    "name": "Default",
+                    "description": "",
+                    "variable_list": [
+                        {
+                            "type": "LOCAL",
+                            "name": "DOMAIN",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": ""
+                            },
+                            "value": "ntnxlab.local"
+                        },
+                        {
+                            "type": "SECRET",
+                            "name": "SSH_PASSWORD",
+                            "description": "",
+                            "options": {
+                                "type": "PREDEFINED",
+                                "choices": []
+                            },
+                            "is_hidden": false,
+                            "is_mandatory": false,
+                            "data_type": "BASE",
+                            "val_type": "STRING",
+                            "label": "",
+                            "attrs": {
+                                "type": "SECRET",
+                                "is_secret_modified": false,
+                                "secret_reference": {}
+                            },
+                            "value": "Xwe2m9jWGpBgItyfbuPXk5UIq0kxMpHXqzEjHd2waM4zdpTYLsZ9OfNc:utf-8"
+                        }
+                    ],
+                    "action_list": [],
+                    "deployment_create_list": [
+                        {
+                            "type": "GREENFIELD",
+                            "name": "deployment_329638b2",
+                            "description": "",
+                            "variable_list": [],
+                            "action_list": [],
+                            "depends_on_list": [],
+                            "min_replicas": "1",
+                            "max_replicas": "1",
+                            "default_replicas": "1",
+                            "package_local_reference_list": [
+                                {
+                                    "name": "Package1",
+                                    "kind": "app_package"
+                                }
+                            ],
+                            "substrate_local_reference": {
+                                "name": "VM1",
+                                "kind": "app_substrate"
+                            },
+                            "published_service_local_reference_list": []
+                        }
+                    ],
+                    "snapshot_config_list": [],
+                    "restore_config_list": [],
+                    "environment_reference_list": [],
+                    "application_url": "",
+                    "patch_list": []
+                }
+            ],
+            "credential_definition_list": [
+                {
+                    "type": "KEY",
+                    "name": "CRED_SSH",
+                    "description": "",
+                    "username": "nutanix",
+                    "secret": {
+                        "attrs": {
+                            "secret_reference": {},
+                            "is_secret_modified": true
+                        },
+                        "value": "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:utf-8"
+                    },
+                    "cred_class": "static"
+                }
+            ],
+            "default_credential_local_reference": {
+                "name": "CRED_SSH",
+                "kind": "app_credential"
+            },
+            "type": "USER",
+            "client_attrs": {
+                "deployment_329638b2": {
+                    "x": 779.5,
+                    "y": 521.5
+                }
+            }
+        }
+    },
+    "api_version": "3.0",
+    "product_version": "4.2.1",
+    "metadata": {
+        "last_update_time": "1770231469079536",
+        "creation_time": "1770229832747865",
+        "spec_version": 6,
+        "name": "erag-ubuntu",
+        "kind": "blueprint"
+    },
+    "contains_secrets": true
+}
