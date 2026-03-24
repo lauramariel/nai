@@ -7,11 +7,12 @@ Generated blueprint DSL (.py)
 import json  # no_qa
 import os  # no_qa
 
+from calm.dsl.builtins import CalmTask as CalmVarTask
 from calm.dsl.builtins import *  # no_qa
 from calm.dsl.runbooks import CalmEndpoint as Endpoint
 
 # Secret Variables
-
+# Note: Don't modify file data, as it is the encoded secrets fetched from the server
 BP_CRED_CRED_SSH_KEY = read_local_file("BP_CRED_CRED_SSH_KEY")
 BP_CRED_CRED_PC_PASSWORD = read_local_file("BP_CRED_CRED_PC_PASSWORD")
 Profile_Nutanix_variable_SSH_PASSWORD = read_local_file(
@@ -33,6 +34,15 @@ Profile_Nutanix_variable_NAI_DEFAULT_PW = read_local_file(
 )
 Profile_Nutanix_variable_NAI_NEW_ADMIN_PW = read_local_file(
     "Profile_Nutanix_variable_NAI_NEW_ADMIN_PW"
+)
+Profile_Nutanix_variable_CONTAINER_REGISTRY_PASSWORD = read_local_file(
+    "Profile_Nutanix_variable_CONTAINER_REGISTRY_PASSWORD"
+)
+Profile_Nutanix_variable_NAI_LICENSE_UUID = read_local_file(
+    "Profile_Nutanix_variable_NAI_LICENSE_UUID"
+)
+Profile_Nutanix_variable_NAI_LICENSE_KEY = read_local_file(
+    "Profile_Nutanix_variable_NAI_LICENSE_KEY"
 )
 
 # Credentials
@@ -100,8 +110,12 @@ class Admin(Service):
         "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
     )
 
+    ERAG_FQDN = CalmVariable.Simple(
+        "", label="", is_mandatory=False, is_hidden=False, runtime=False, description=""
+    )
+
     @action
-    def __delete__():
+    def __delete__(type="system"):
         """System action for deleting an application. Deletes created VMs as well"""
 
         with parallel() as p0:
@@ -137,6 +151,15 @@ class Admin(Service):
                     filename=os.path.join(
                         "scripts",
                         "Service_Admin_Action_InstallDeps_Task_Createenvironmentvariables.sh",
+                    ),
+                    target=ref(Admin),
+                )
+
+                CalmTask.Exec.ssh(
+                    name="Install Python dependencies",
+                    filename=os.path.join(
+                        "scripts",
+                        "Service_Admin_Action_InstallDeps_Task_InstallPythondependencies.sh",
                     ),
                     target=ref(Admin),
                 )
@@ -205,21 +228,31 @@ class Admin(Service):
                     ),
                     target=ref(Admin),
                 )
+                with parallel() as p1:
+                    with branch(p1):
+                        CalmTask.Exec.ssh(
+                            name="Enable applications",
+                            filename=os.path.join(
+                                "scripts",
+                                "Service_Admin_Action_ConfigureNkpCluster_Task_Enableapplications.sh",
+                            ),
+                            target=ref(Admin),
+                        )
+                    with branch(p1):
+                        CalmTask.Exec.ssh(
+                            name="Disable unneeded apps",
+                            filename=os.path.join(
+                                "scripts",
+                                "Service_Admin_Action_ConfigureNkpCluster_Task_Disableunneededapps.sh",
+                            ),
+                            target=ref(Admin),
+                        )
             with branch(p0):
                 CalmTask.Exec.ssh(
                     name="Add LB IPs",
                     filename=os.path.join(
                         "scripts",
                         "Service_Admin_Action_ConfigureNkpCluster_Task_AddLBIPs.sh",
-                    ),
-                    target=ref(Admin),
-                )
-            with branch(p0):
-                CalmTask.Exec.ssh(
-                    name="Enable applications",
-                    filename=os.path.join(
-                        "scripts",
-                        "Service_Admin_Action_ConfigureNkpCluster_Task_Enableapplications.sh",
                     ),
                     target=ref(Admin),
                 )
@@ -234,7 +267,7 @@ class Admin(Service):
                 )
 
     @action
-    def NotUsed_ConfigureDefaultWorkspace():
+    def CreateEragCluster():
 
         with parallel() as p0:
             with branch(p0):
@@ -242,7 +275,7 @@ class Admin(Service):
                     name="Configure Infrastructure provider",
                     filename=os.path.join(
                         "scripts",
-                        "Service_Admin_Action_NotUsed_ConfigureDefaultWorkspace_Task_ConfigureInfrastructureprovider.sh",
+                        "Service_Admin_Action_CreateEragCluster_Task_ConfigureInfrastructureprovider.sh",
                     ),
                     target=ref(Admin),
                 )
@@ -251,29 +284,28 @@ class Admin(Service):
                     name="Enable applications",
                     filename=os.path.join(
                         "scripts",
-                        "Service_Admin_Action_NotUsed_ConfigureDefaultWorkspace_Task_Enableapplications.sh",
+                        "Service_Admin_Action_CreateEragCluster_Task_Enableapplications.sh",
                     ),
                     target=ref(Admin),
                 )
-                with parallel() as p1:
-                    with branch(p1):
-                        CalmTask.Exec.ssh(
-                            name="Create workload cluster 01",
-                            filename=os.path.join(
-                                "scripts",
-                                "Service_Admin_Action_NotUsed_ConfigureDefaultWorkspace_Task_Createworkloadcluster01.sh",
-                            ),
-                            target=ref(Admin),
-                        )
-                    with branch(p1):
-                        CalmTask.Exec.ssh(
-                            name="Create workload cluster 02",
-                            filename=os.path.join(
-                                "scripts",
-                                "Service_Admin_Action_NotUsed_ConfigureDefaultWorkspace_Task_Createworkloadcluster02.sh",
-                            ),
-                            target=ref(Admin),
-                        )
+
+                CalmTask.Exec.ssh(
+                    name="Create erag cluster",
+                    filename=os.path.join(
+                        "scripts",
+                        "Service_Admin_Action_CreateEragCluster_Task_Createeragcluster.sh",
+                    ),
+                    target=ref(Admin),
+                )
+
+                CalmTask.Exec.ssh(
+                    name="Configure Storage",
+                    filename=os.path.join(
+                        "scripts",
+                        "Service_Admin_Action_CreateEragCluster_Task_ConfigureStorage.sh",
+                    ),
+                    target=ref(Admin),
+                )
 
     @action
     def GetDashboardAccess():
@@ -311,11 +343,62 @@ class Admin(Service):
                 Admin.ConfigureObjects(name="Configure Objects")
 
                 Admin.InstallAISoftware(name="InstallAISoftware")
+
+                Admin.InstallErag(name="Install ERAG If Set")
+
+                CalmTask.Exec.ssh(
+                    name="Delete Secrets",
+                    filename=os.path.join(
+                        "scripts",
+                        "Service_Admin_Action_PackageInstall_Task_DeleteSecrets.sh",
+                    ),
+                    target=ref(Admin),
+                )
+
+                CalmTask.Exec.ssh(
+                    name="Get All Kubeconfigs",
+                    filename=os.path.join(
+                        "scripts",
+                        "Service_Admin_Action_PackageInstall_Task_GetAllKubeconfigs.sh",
+                    ),
+                    target=ref(Admin),
+                )
             with branch(p5):
                 Admin.GetDashboardAccess(name="NKP dashboard access details")
+            with branch(p5):
+                Admin.CreateEragCluster(name="Create eRAG Cluster")
+
+                Admin.InstallErag(name="Install ERAG If Set")
+
+                CalmTask.Exec.ssh(
+                    name="Delete Secrets",
+                    filename=os.path.join(
+                        "scripts",
+                        "Service_Admin_Action_PackageInstall_Task_DeleteSecrets.sh",
+                    ),
+                    target=ref(Admin),
+                )
+
+                CalmTask.Exec.ssh(
+                    name="Get All Kubeconfigs",
+                    filename=os.path.join(
+                        "scripts",
+                        "Service_Admin_Action_PackageInstall_Task_GetAllKubeconfigs.sh",
+                    ),
+                    target=ref(Admin),
+                )
 
     @action
     def NkpDeleteClusters():
+
+        CalmTask.Exec.ssh(
+            name="Delete erag cluster",
+            filename=os.path.join(
+                "scripts",
+                "Service_Admin_Action_NkpDeleteClusters_Task_Deleteeragcluster.sh",
+            ),
+            target=ref(Admin),
+        )
 
         CalmTask.Exec.ssh(
             name="Delete management cluster",
@@ -330,9 +413,9 @@ class Admin(Service):
     def InstallNAI():
 
         CalmTask.Exec.ssh(
-            name="InstallKserve",
+            name="InstallNAIDeps",
             filename=os.path.join(
-                "scripts", "Service_Admin_Action_InstallNAI_Task_InstallKserve.sh"
+                "scripts", "Service_Admin_Action_InstallNAI_Task_InstallNAIDeps.sh"
             ),
             target=ref(Admin),
         )
@@ -355,9 +438,17 @@ class Admin(Service):
         )
 
         CalmTask.Exec.ssh(
-            name="ConfigureNAI",
+            name="SetupNAI",
             filename=os.path.join(
-                "scripts", "Service_Admin_Action_InstallNAI_Task_ConfigureNAI.sh"
+                "scripts", "Service_Admin_Action_InstallNAI_Task_SetupNAI.sh"
+            ),
+            target=ref(Admin),
+        )
+
+        CalmTask.Exec.ssh(
+            name="CreateNAIUsers",
+            filename=os.path.join(
+                "scripts", "Service_Admin_Action_InstallNAI_Task_CreateNAIUsers.sh"
             ),
             target=ref(Admin),
         )
@@ -406,18 +497,17 @@ class Admin(Service):
     @action
     def ConfigureObjects():
 
-        CalmTask.SetVariable.escript.py3(
-            name="Create Buckets and Shared Access Key",
+        CalmTask.SetVariable.ssh(
+            name="Configure Objects via Script",
             filename=os.path.join(
                 "scripts",
-                "Service_Admin_Action_ConfigureObjects_Task_CreateBucketsandSharedAccessKey.py",
+                "Service_Admin_Action_ConfigureObjects_Task_ConfigureObjectsviaScript.sh",
             ),
             target=ref(Admin),
             variables=[
-                "SHARED_OBJECTS_ACCESS_KEY",
-                "SHARED_OBJECTS_SECRET_KEY",
-                "NUS_OBJ_INSTANCE_IP_ADDRESS",
                 "OBJECTS_URL",
+                "SHARED_OBJECTS_SECRET_KEY",
+                "SHARED_OBJECTS_ACCESS_KEY",
             ],
         )
 
@@ -432,6 +522,39 @@ class Admin(Service):
             target=ref(Admin),
         )
 
+    @action
+    def InstallErag():
+        """this will only run if ERAG application variable is set to true"""
+
+        CalmTask.SetVariable.ssh(
+            name="Configure and Install Erag",
+            filename=os.path.join(
+                "scripts",
+                "Service_Admin_Action_InstallErag_Task_ConfigureandInstallErag.sh",
+            ),
+            target=ref(Admin),
+            variables=["ERAG_FQDN"],
+        )
+
+        CalmTask.Exec.ssh(
+            name="Create Erag Users",
+            filename=os.path.join(
+                "scripts", "Service_Admin_Action_InstallErag_Task_CreateEragUsers.sh"
+            ),
+            target=ref(Admin),
+        )
+
+    @action
+    def UninstallErag():
+
+        CalmTask.Exec.ssh(
+            name="UninstallErag",
+            filename=os.path.join(
+                "scripts", "Service_Admin_Action_UninstallErag_Task_UninstallErag.sh"
+            ),
+            target=ref(Admin),
+        )
+
 
 class calm_application_namebootResources(AhvVmResources):
 
@@ -440,10 +563,10 @@ class calm_application_namebootResources(AhvVmResources):
     cores_per_vCPU = 1
     disks = [
         AhvVmDisk.Disk.Scsi.cloneFromImageService(
-            "nkp-rocky-9.5-release-1.31.4-20250214003015.qcow2", bootable=True
+            "nkp-ubuntu-22.04-release-cis-1.33.5-20251108010758.qcow2", bootable=True
         )
     ]
-    nics = [AhvVmNic.NormalNic.ingress("primary", cluster="DM3-POC086")]
+    nics = [AhvVmNic.NormalNic.ingress("primary", cluster="PHX-MKT231")]
 
     guest_customization = AhvVmGC.CloudInit(
         filename=os.path.join("specs", "calm_application_nameboot_cloud_init_data.yaml")
@@ -456,7 +579,7 @@ class calm_application_nameboot(AhvVm):
 
     name = "@@{calm_application_name}@@-boot"
     resources = calm_application_namebootResources
-    cluster = Ref.Cluster(name="DM3-POC086")
+    cluster = Ref.Cluster(name="PHX-MKT231")
 
 
 class Admin_Substrate(Substrate):
@@ -489,7 +612,7 @@ class Admin_Package(Package):
     services = [ref(Admin)]
 
     @action
-    def __install__():
+    def __install__(type="system"):
 
         Admin.PackageInstall(name="Package Install")
 
@@ -508,12 +631,12 @@ class Nutanix(Profile):
     deployments = [Admin_Deployment]
 
     MANAGEMENT_WORKSPACE_APPS = CalmVariable.Simple(
-        "nkp-insights,nkp-insights-1.4.4 istio,istio-1.23.3 knative,knative-1.17.0",
+        "nkp-insights,nkp-insights-1.6.9 nvidia-gpu-operator,nvidia-gpu-operator-25.3.3",
         label="Apps to additionally enable in the Management Workspace",
         is_mandatory=False,
         is_hidden=True,
         runtime=False,
-        description="This need to be updated with every new release. Command to list apps is kubectl get clusterapps. The format of the list is to use comma to separate appdeployment and app name, and the space to separate different apps",
+        description="This need to be updated with every new release. Command to list apps is kubectl get clusterapps. The format of the list is to use comma to separate appdeployment and app name, and the space to separate different apps\n\nold:\nistio,istio-1.23.3 knative,knative-1.17.0",
     )
 
     DEFAULT_WORKSPACE_APPS = CalmVariable.Simple(
@@ -600,7 +723,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_USERS_ENDS = CalmVariable.Simple(
-        "10.55.86.48",
+        "10.8.48.42",
         label="External IPs for users LB services",
         is_mandatory=True,
         is_hidden=False,
@@ -609,7 +732,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_USERS_STARTS = CalmVariable.Simple(
-        "10.55.86.39",
+        "10.8.48.39",
         label="External IPs for users LB services",
         is_mandatory=True,
         is_hidden=False,
@@ -618,7 +741,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_ENDS = CalmVariable.Simple(
-        "10.55.86.16",
+        "10.8.48.16",
         label="NKP Apps VIP for MetalLB",
         is_mandatory=True,
         is_hidden=False,
@@ -627,7 +750,7 @@ class Nutanix(Profile):
     )
 
     MGMT_LB_IP_RANGE_STARTS = CalmVariable.Simple(
-        "10.55.86.16",
+        "10.8.48.16",
         label="NKP Apps VIP for MetalLB",
         is_mandatory=True,
         is_hidden=False,
@@ -636,7 +759,7 @@ class Nutanix(Profile):
     )
 
     CONTROL_PLANE_VIP_ADDRESS = CalmVariable.Simple(
-        "10.55.86.15",
+        "10.8.48.15",
         label="Control Plane VIP address",
         is_mandatory=True,
         is_hidden=False,
@@ -645,7 +768,7 @@ class Nutanix(Profile):
     )
 
     NKP_BINARY_URL = CalmVariable.Simple(
-        "http://10.55.92.18/vx-images/nkp_v2.14.0_linux_amd64.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=b8fsjfd4yc1pGFsZw0LX4jrZU6D_1A4K%2F20251106%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251106T185853Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=64eabde60c0f631364a73cd073cfd357e98f51ad06f88f84bc6f11764647575c",
+        "http://10.55.251.38/workshop_staging/tradeshows/software/nutanix/kubernetes/nkp/nkp_v2.16.1_linux_amd64.tar.gz",
         label="URL for NKP CLI tarball",
         is_mandatory=True,
         is_hidden=False,
@@ -672,7 +795,7 @@ class Nutanix(Profile):
     )
 
     LDAP_HOST = CalmVariable.Simple(
-        "10.55.86.6",
+        "10.8.48.7",
         label="LDAP Host",
         is_mandatory=True,
         is_hidden=False,
@@ -749,7 +872,7 @@ class Nutanix(Profile):
     )
 
     PC_ADDRESS = CalmVariable.Simple(
-        "10.55.86.7",
+        "10.8.48.7",
         label="Prism Central IP address",
         is_mandatory=True,
         is_hidden=False,
@@ -769,7 +892,7 @@ class Nutanix(Profile):
     )
 
     MACHINE_TEMPLATE_IMAGE_NAME = CalmVariable.Simple(
-        "nkp-rocky-9.5-release-1.31.4-20250214003015.qcow2",
+        "nkp-rocky-9.6-release-cis-1.33.5-20251108010758.qcow2",
         label="Template name",
         is_mandatory=False,
         is_hidden=True,
@@ -778,7 +901,7 @@ class Nutanix(Profile):
     )
 
     PRISM_ELEMENT_CLUSTER_NAME = CalmVariable.Simple(
-        "DM3-POC086",
+        "RNO-SPOC007-1",
         label="Prism Element cluster name",
         is_mandatory=True,
         is_hidden=False,
@@ -787,7 +910,7 @@ class Nutanix(Profile):
     )
 
     PE_VIP_ADDRESS = CalmVariable.Simple(
-        "10.55.86.37",
+        "10.8.31.37",
         label="Prism Element cluster IP",
         is_mandatory=True,
         is_hidden=False,
@@ -832,7 +955,7 @@ class Nutanix(Profile):
     )
 
     NAI_CORE_VERSION = CalmVariable.Simple(
-        "2.2",
+        "2.5",
         label="",
         is_mandatory=False,
         is_hidden=False,
@@ -885,9 +1008,157 @@ class Nutanix(Profile):
         description="",
     )
 
+    CONTAINER_REGISTRY_USERNAME = CalmVariable.Simple(
+        "admin",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
 
-class next25nai(Blueprint):
-    """[NAI Dashboard](@@{Admin.NAI_UI_ENDPOINT}@@)
+    CONTAINER_REGISTRY_PASSWORD = CalmVariable.Simple.Secret(
+        Profile_Nutanix_variable_CONTAINER_REGISTRY_PASSWORD,
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    NAI_LICENSE_UUID = CalmVariable.Simple.Secret(
+        Profile_Nutanix_variable_NAI_LICENSE_UUID,
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    NAI_LICENSE_KEY = CalmVariable.Simple.Secret(
+        Profile_Nutanix_variable_NAI_LICENSE_KEY,
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    OBJ_CONFIG_SCRIPT = CalmVariable.Simple(
+        "http://10.55.251.38/workshop_staging/tradeshows/experimental/nai-bootcamp/nai_bootcamp_configure_objects.py",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    NAI_IMAGE_REGISTRY = CalmVariable.Simple(
+        "registry.nutanixdemo.com/nai",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    NO_OF_USERS = CalmVariable.Simple(
+        "5",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    NO_OF_WORKER_NODES = CalmVariable.Simple(
+        "6",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    WL01_CONTROL_PLANE_VIP_ADDRESS = CalmVariable.Simple(
+        "10.8.48.143",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    WL01_NUTANIX_SUBNET_NAME = CalmVariable.Simple(
+        "secondary",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    WL01_LB_IP_RANGE_ENDS = CalmVariable.Simple(
+        "10.8.48.150",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    WL01_LB_IP_RANGE_STARTS = CalmVariable.Simple(
+        "10.8.48.150",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    WL01_LB_IP_USERS_RANGE_ENDS = CalmVariable.Simple(
+        "10.8.48.157",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    WL01_LB_IP_USERS_RANGE_STARTS = CalmVariable.Simple(
+        "10.8.48.153",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    ERAG_VERSION = CalmVariable.Simple(
+        "release-2.0.1",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+    ERAG = CalmVariable.Simple(
+        "true",
+        label="",
+        is_mandatory=False,
+        is_hidden=False,
+        runtime=False,
+        description="",
+    )
+
+
+class naionnkpv25_ERAG(Blueprint):
+    """Version: NAI 2.5 on NKP 2.16.1 with Intel ERAG
+
+    [NAI Dashboard](@@{Admin.NAI_UI_ENDPOINT}@@)
+
+    [ERAG Dashboard](@@{Admin.ERAG_FQDN}@@)
 
     Objects Info:
     - Objects Browser: @@{Admin.OBJECTS_URL}@@

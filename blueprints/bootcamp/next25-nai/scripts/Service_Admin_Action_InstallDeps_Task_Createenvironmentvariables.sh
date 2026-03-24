@@ -2,6 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+echo "Creating .env file"
 cat <<EOF >>~/.env
 # NKP
 export NKP_VERSION=$(nkp version -o=json |jq -r '.nkp.gitVersion')
@@ -18,9 +19,18 @@ export NUTANIX_PRISM_ELEMENT_CLUSTER_NAME="@@{PRISM_ELEMENT_CLUSTER_NAME}@@"
 export NUTANIX_SUBNET_NAME="@@{SUBNET_NAME}@@"
 export NUTANIX_STORAGE_CONTAINER_NAME="@@{STORAGE_CONTAINER_NAME}@@"
 export REGISTRY_MIRROR_URL="@@{CONTAINER_REGISTRY_MIRROR}@@"
+export NAI_IMAGE_REGISTRY="@@{NAI_IMAGE_REGISTRY}@@"
+export REGISTRY_USERNAME="@@{CONTAINER_REGISTRY_USERNAME}@@"
 export NO_COLOR=1
 export MGMT_LB_IP_RANGE_USERS_STARTS="@@{MGMT_LB_IP_RANGE_USERS_STARTS}@@"
 export MGMT_LB_IP_RANGE_USERS_ENDS="@@{MGMT_LB_IP_RANGE_USERS_ENDS}@@"
+export WL01_CONTROL_PLANE_VIP_ADDRESS="@@{WL01_CONTROL_PLANE_VIP_ADDRESS}@@"
+export WL01_NUTANIX_SUBNET_NAME="@@{WL01_NUTANIX_SUBNET_NAME}@@"
+export WL01_LB_IP_RANGE_STARTS="@@{WL01_LB_IP_RANGE_STARTS}@@"
+export WL01_LB_IP_RANGE_ENDS="@@{WL01_LB_IP_RANGE_ENDS}@@"
+export WL01_LB_IP_RANGE_USERS_STARTS="@@{WL01_LB_IP_USERS_RANGE_STARTS}@@"
+export WL01_LB_IP_RANGE_USERS_ENDS="@@{WL01_LB_IP_USERS_RANGE_ENDS}@@"
+
 # LDAP
 export DOMAIN=@@{DOMAIN}@@
 export BINDDN='@@{BINDDN}@@'
@@ -47,4 +57,39 @@ export FILES_CREDS_STRING="@@{NUS_FS_NAME}@@.ntnxlab.local:@@{NUS_FS_API_USER}@@
 export NAI_CORE_VERSION="@@{NAI_CORE_VERSION}@@"
 export NKP_WORKSPACE=kommander-workspace
 export NKP_NAMESPACE=kommander
+# Objects
+export NUS_OBJ_NAME="@@{NUS_OBJ_NAME}@@"
+export OBJ_CONFIG_SCRIPT="@@{OBJ_CONFIG_SCRIPT}@@"
+# Sizing
+export NO_OF_USERS="@@{NO_OF_USERS}@@"
+export NO_OF_WORKER_NODES="@@{NO_OF_WORKER_NODES}@@"
+
+# ERAG
+export ERAG_INGRESS_IP=@@{WL01_LB_IP_USERS_RANGE_STARTS}@@
+export PATH_TO_ERAG_KUBECFG="/home/nutanix/erag.conf"
+export ERAG_VERSION=@@{ERAG_VERSION}@@
+EOF
+
+echo "Creating .secrets file"
+cat <<EOF >>~/.secrets
+export REGISTRY_PASSWORD="@@{CONTAINER_REGISTRY_PASSWORD}@@"
+export NAI_DEFAULT_PW="@@{NAI_DEFAULT_PW}@@"
+export NAI_NEW_ADMIN_PW="@@{NAI_NEW_ADMIN_PW}@@"
+export HF_TOKEN="@@{HF_TOKEN}@@"
+export LICENSE_KEY="@@{NAI_LICENSE_KEY}@@"
+export LICENSE_CLUSTER_UUID="@@{NAI_LICENSE_UUID}@@"
+export NAI_NEW_USER_PW="@@{NAI_NEW_USER_PW}@@"
+export PC_ADDRESS="@@{PC_ADDRESS}@@"
+export PC_PORT="@@{PC_PORT}@@"
+export PC_USERNAME="@@{CRED_PC.username}@@" 
+export PC_PASSWORD="@@{CRED_PC.secret}@@"
+export DOMAIN="@@{DOMAIN}@@"
+EOF
+
+# Adding necessary erag FQDNs to .env for later use
+source ~/.env
+
+cat <<EOF >>~/.env
+export FQDN="erag-${ERAG_INGRESS_IP//./-}.sslip.nutanixdemo.com"
+export KEYCLOAK_FQDN="auth-erag-${ERAG_INGRESS_IP//./-}.sslip.nutanixdemo.com"
 EOF

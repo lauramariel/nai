@@ -1,7 +1,14 @@
-# Installing Milvus in 5 namespaces for 5 users
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
 
-helm repo add milvus https://zilliztech.github.io/milvus-helm/
-helm repo update
+# Installing Milvus
+
+source ~/.secrets
+source ~/.env
+
+# Pull Helm Chart
+helm pull oci://$NAI_IMAGE_REGISTRY/milvus --version 4.2.44
 
 cd ~
 export MILVUS_VALUES_FILE="milvus-values.yaml"
@@ -10,10 +17,19 @@ export MILVUS_ATTU_INGRESS_FILE="milvus-attu-ingress.yaml"
 
 # Create Milvus config templates
 cat <<EOF > $MILVUS_VALUES_FILE
-#ATTU Frontend
+image:
+  repository: registry.nutanixdemo.com/bootcamps/milvusdb/milvus
+  tag: v2.5.8
+  pullPolicy: IfNotPresent
+
+# ATTU Frontend
 attu:
   enabled: true
   name: attu
+  image:
+    repository: registry.nutanixdemo.com/bootcamps/zilliz/attu
+    tag: v2.5.3
+    pullPolicy: IfNotPresent
   service:
     type: ClusterIP
     port: 80
@@ -22,18 +38,26 @@ attu:
 cluster:
   enabled: false
 
+# ETCD settings
 etcd:
   replicaCount: 1
+  image:
+    registry: registry.nutanixdemo.com/bootcamps
+    repository: milvusdb/etcd
+    tag: 3.5.18-r1 
+    pullPolicy: IfNotPresent
 
-pulsar:
+# Pulsar settings
+pulsarv3:
   enabled: false
 
+# Milvus Service settings
 service:
   type: ClusterIP
   ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 19530
+    - port: 80
+      protocol: TCP
+      targetPort: 19530
 
 # Disable MinIO and configuring External S3
 minio:
@@ -107,22 +131,28 @@ spec:
                   number: 80
 EOF
 
-for i in {1..5}
+echo "Creating $NO_OF_USERS Milvus instances"
+
+for i in $(seq 1 $NO_OF_USERS)
 do
     export INSTANCE="milvus-adminuser0$i"
 
     kubectl create namespace ${INSTANCE} --dry-run=client -o yaml | kubectl apply -f -
 
-    # use the existing certificate
-    kubectl get secret -n istio-system nai-cert -o yaml | sed "s/namespace: istio-system/namespace: ${INSTANCE}/g" | kubectl apply -f -
+    # copy the existing certificate from nai-system
+    kubectl get secret nai-cert -n nai-system -o json | \
+    jq 'del(.metadata.namespace, .metadata.resourceVersion, .metadata.uid, .metadata.creationTimestamp, .metadata.managedFields)' | \
+    kubectl apply -n ${INSTANCE} -f -
+    
     kubectl get secret nai-cert -n ${INSTANCE}
 
-    export S3_HOST="@@{NUS_OBJ_INSTANCE_IP_ADDRESS}@@"
-    export S3_ACCESS_KEY="@@{SHARED_OBJECTS_ACCESS_KEY}@@"
-    export S3_SECRET_KEY="@@{SHARED_OBJECTS_SECRET_KEY}@@"
     export S3_BUCKET_NAME="adminuser0$i"
 
     # Update user-specific values
+    echo "S3_HOST=$S3_HOST"
+    echo "S3_ACCESS_KEY=$S3_ACCESS_KEY"
+    echo "S3_SECRET_KEY=$S3_SECRET_KEY"
+    echo "S3_BUCKET_NAME=$S3_BUCKET_NAME"
     yq -i -e '.externalS3.host = strenv(S3_HOST)' $MILVUS_VALUES_FILE
     yq -i -e '.externalS3.accessKey = strenv(S3_ACCESS_KEY)' $MILVUS_VALUES_FILE
     yq -i -e '.externalS3.secretKey = strenv(S3_SECRET_KEY)' $MILVUS_VALUES_FILE
@@ -130,8 +160,7 @@ do
 
     # Install
     helm upgrade --cleanup-on-fail \
-        --install milvus-vectordb milvus/milvus --version 4.2.44 \
-        --set image.tag="2.5.8" \
+        --install milvus-vectordb ./milvus-4.2.44.tgz\
         --namespace ${INSTANCE} \
         --create-namespace \
         --wait \

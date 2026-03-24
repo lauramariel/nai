@@ -1,29 +1,90 @@
 |-
 #cloud-config
-hostname: @@{name}@@
+hostname: "@@{name}@@"
 fqdn: "@@{name}@@.@@{DOMAIN}@@"
 prefer_fqdn_over_hostname: true
 manage_etc_hosts: true
-ssh_pwauth: true
-chpasswd:
-  expire: false
-  users:
-    - name: @@{CRED_SSH.username}@@
-      password: @@{SSH_PASSWORD}@@
-      type: text
+
 users:
-- name: @@{CRED_SSH.username}@@
-  shell: /bin/bash
-  ssh_authorized_keys:
-  - @@{CRED_SSH.public_key}@@
-  sudo: ALL=(ALL) NOPASSWD:ALL
+  - name: nutanix
+    lock_passwd: false
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: [sudo, admin, docker]
+    ssh_authorized_keys:
+      - "@@{CRED_SSH.public_key}@@"
+
+packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - apt-transport-https
+  - software-properties-common
+
+write_files:
+  - path: /usr/local/bin/bootstrap.sh
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      set -x 
+      
+      # 1. CONSOLE & ACCESS FIXES
+      if [ -f /etc/selinux/config ]; then sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config; setenforce 0 || true; fi
+      sed -i 's/ENCRYPT_METHOD.*/ENCRYPT_METHOD SHA512/' /etc/login.defs
+      mkdir -p /etc/security/pwquality.conf.d && echo -e "minlen = 1\nenforcing = 0" > /etc/security/pwquality.conf.d/00-override.conf
+      
+      # 2. SSH RECOVERY (Fixes "Connection Reset")
+      # Stop and disable the socket-based activation which conflicts with the service
+      systemctl stop ssh.socket || true
+      systemctl disable ssh.socket || true
+      systemctl mask ssh.socket || true
+      
+      # Create clean SSH override
+      mkdir -p /etc/ssh/sshd_config.d
+      cat <<EOF > /etc/ssh/sshd_config.d/99-custom-access.conf
+      PasswordAuthentication yes
+      PubkeyAuthentication yes
+      KbdInteractiveAuthentication yes
+      ChallengeResponseAuthentication yes
+      UsePAM yes
+      EOF
+      
+      # Force password and restart service
+      echo "nutanix:$(openssl passwd -6 @@{SSH_PASSWORD}@@)" | chpasswd -e
+      systemctl daemon-reload
+      systemctl enable ssh
+      systemctl restart ssh
+
+      # 3. APT REPO CLEANUP
+      export DEBIAN_FRONTEND=noninteractive
+      CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+      rm -f /etc/apt/sources.list.d/kubernetes.list
+      grep -rl "pkgs.k8s.io" /etc/apt/sources.list.d/ | xargs -r rm -f
+
+      echo "Waiting for apt locks..."
+      until apt-get update; do sleep 5; done
+
+      # 4. CONFIGURE REPOS
+      # Docker
+      install -m 0755 -d /etc/apt/keyrings
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $CODENAME stable" > /etc/apt/sources.list.d/docker.list
+
+      # Kubernetes (v1.34)
+      curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor --yes -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /" > /etc/apt/sources.list.d/kubernetes.list
+
+      # 5. INSTALLATION (Added --allow-change-held-packages to fix earlier error)
+      apt-get -y update
+      apt-get -o Dpkg::Options::="--force-confnew" -y --allow-change-held-packages install \
+        docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
+        ansible sshpass kubectl
+
+      # 6. FINAL STEPS
+      systemctl enable --now docker || true
+      usermod -aG docker nutanix || true
+      curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
 runcmd:
-- '[ ! -f "/etc/yum.repos.d/nutanix_rocky9.repo" ] || mv -f /etc/yum.repos.d/nutanix_rocky9.repo /etc/yum.repos.d/nutanix_rocky9.repo.disabled'
-- dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-- dnf -y install docker-ce docker-ce-cli containerd.io
-- systemctl --now enable docker
-- usermod -aG docker nutanix
-- 'curl -Lo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl'
-- chmod +x /usr/local/bin/kubectl
-- 'curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
-- eject
+  - /usr/local/bin/bootstrap.sh

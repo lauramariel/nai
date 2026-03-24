@@ -2,8 +2,6 @@
 
 set -e
 
-kubectl -n kommander delete appdeployment ai-navigator-app
-
 kubectl patch deployment kommander-kommander-ui \
   -n kommander \
   --type='json' \
