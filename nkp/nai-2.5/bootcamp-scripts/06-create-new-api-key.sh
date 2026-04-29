@@ -82,8 +82,8 @@ main() {
     userid=$(userid_from_username "$user")
     #endpoint="llama-$userid"
     #endpoint=""
-    endpoint="gemma-$userid"
-    apikeyname="gemma-$userid"
+    endpoint="llama-$userid"
+    apikeyname="llama-$userid"
     create_api_key "$user" "$endpoint" "$apikeyname"
   done
 }

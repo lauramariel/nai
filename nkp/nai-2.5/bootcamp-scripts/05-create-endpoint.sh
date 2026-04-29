@@ -131,7 +131,7 @@ create_endpoint() {
   "engine": "vllm",
   "advancedConfig": {
     "vllmArgs": {
-      "maxNumTokens": 512
+      "maxNumTokens": 4096
     }
   }
 }

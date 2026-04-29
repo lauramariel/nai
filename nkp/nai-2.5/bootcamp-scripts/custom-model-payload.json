@@ -1,0 +1,17 @@
+{
+    "modelProvider": {
+        "customModelDetails": {
+            "developer": "",
+            "modelCapabilities": [
+                "text-to-text"
+            ]
+        }
+    },
+    "name": "gemma-3-270m-it-$userid",
+    "sourceFormat": "hf",
+    "storageProvider": {
+        "huggingFaceHub": {
+            "repoId": "google/gemma-3-270m-it-manual"
+        }
+    }
+}
