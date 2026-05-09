@@ -61,5 +61,8 @@ spec:
     name: velero-overrides
 EOF
 
+# Check for upgrade success or failure 
+kubectl --kubeconfig=${CLUSTER_NAME}.conf get hr -n ${NKP_WORKSPACE_NAMESPACE} velero
+
 # Force reconciliation
 # kubectl --kubeconfig=${CLUSTER_NAME}.conf -n kommander   annotate helmrelease velero reconcile.fluxcd.io/requestedAt=$(date +%s) --overwrite
