@@ -72,3 +72,5 @@ NAME                            STATUS      ERRORS   WARNINGS   CREATED         
 hello-backup                    Completed   0        0          2026-05-09 01:58:08 +0000 UTC   29d       ntnx-object-nkp    <none>
 ```
 You should also see files on the Nutanix Objects side, in the configured bucket.
+
+![](./velero-backup-objects.png)
