@@ -24,7 +24,7 @@ kubectl --kubeconfig ${CLUSTER_NAME}.conf apply -f - <<EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: ${WORKSPACE_NAMESPACE}
+  namespace: ${NKP_WORKSPACE_NAMESPACE}
   name: velero-overrides
 data:
   values.yaml: |
