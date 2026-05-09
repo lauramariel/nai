@@ -26,6 +26,19 @@ vi velero.env
 bash configure-velero-with-objects.sh
 ```
 
+## View updated backup storage location
+```
+kubectl get bsl -n kommander
+kubectl describe bsl ntnx-object-nkp -n kommander
+```
+
+The output of the get command should show Available.
+
+```
+NAME              PHASE       LAST VALIDATED   AGE   DEFAULT
+ntnx-object-nkp   Available   18s              52m   true
+```
+
 ## Creating a test backup
 ```
 # Create a test namespace
@@ -58,3 +71,4 @@ Example output
 NAME                            STATUS      ERRORS   WARNINGS   CREATED                         EXPIRES   STORAGE LOCATION   SELECTOR
 hello-backup                    Completed   0        0          2026-05-09 01:58:08 +0000 UTC   29d       ntnx-object-nkp    <none>
 ```
+You should also see files on the Nutanix Objects side, in the configured bucket.
