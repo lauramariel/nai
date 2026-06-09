@@ -85,7 +85,11 @@ echo -e "\nEnable Import of meta-llama/Llama-3.2-1B-Instruct"
 echo -e "\n"
 echo -n "Getting catalog ID... "
 # First, have to get catalog ID for the one we want
-catalog_id=$(curl $CURL_OPTS -X GET "$NAI_UI_ENDPOINT/api/enterpriseai/v1/catalogs" -H $HEADERS -u $NEW_AUTH | jq -r '.data.catalogs[] | select(.modelName=="meta-llama/Llama-3.2-1B-Instruct").id')
+PAYLOAD=$(cat <<EOF
+{"offset":0,"filters":[]}
+EOF
+)
+catalog_id=$(curl $CURL_OPTS -X POST "$NAI_UI_ENDPOINT/api/enterpriseai/v1/catalogs/search" -H $HEADERS -u $NEW_AUTH -d $PAYLOAD | jq -r '.data.catalogs[] | select(.modelName=="meta-llama/Llama-3.2-1B-Instruct").id')
 echo -e $catalog_id
 
 echo -e "\nEnabling catalog ID"
