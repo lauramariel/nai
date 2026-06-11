@@ -1,0 +1,4 @@
+---
+NAI_API_RWX_STORAGECLASS: "nutanix-files"         # UPDATE: RWX storage class name to create
+NFS_SERVER_NAME: "nfs-server-name"                 # UPDATE: Nutanix Files server name
+NFS_SERVER_FQDN: "nfs-server.example.com"          # UPDATE: Nutanix Files server FQDN

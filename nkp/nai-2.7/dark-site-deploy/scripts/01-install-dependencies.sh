@@ -55,7 +55,7 @@ helm upgrade --install eg ./gateway-helm-v1.7.0.tgz \
   -f ./eg-config-for-gateway-mode.yaml
 
 
-# Not in 2.7 docs
+# NOTE: Not in 2.7 docs
 # Create an Envoy Proxy resource for the Envoy Gateway to pull image from local private registry
 # cat <<EOF | kubectl apply -f -
 # apiVersion: gateway.envoyproxy.io/v1alpha1

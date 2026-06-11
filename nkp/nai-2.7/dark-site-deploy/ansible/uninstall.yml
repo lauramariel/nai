@@ -1,0 +1,89 @@
+---
+- name: Uninstall NAI on NKP (dark site)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - vars/vars.yml
+    - vars/secrets.yml
+
+  tasks:
+
+    - name: Uninstall nai-core
+      kubernetes.core.helm:
+        name: nai-core
+        release_namespace: nai-system
+        state: absent
+        wait: true
+      tags: [nai]
+
+    - name: Uninstall nai-operators
+      kubernetes.core.helm:
+        name: nai-operators
+        release_namespace: nai-system
+        state: absent
+        wait: true
+      tags: [nai]
+
+    - name: Delete nai-system namespace
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: nai-system
+        wait: true
+        wait_timeout: 120
+      ignore_errors: true
+      tags: [nai]
+
+    - name: Uninstall OpenTelemetry Operator
+      kubernetes.core.helm:
+        name: opentelemetry-operator
+        release_namespace: opentelemetry
+        state: absent
+        wait: true
+      tags: [dependencies]
+
+    - name: Uninstall KServe
+      kubernetes.core.helm:
+        name: kserve
+        release_namespace: kserve
+        state: absent
+        wait: true
+      tags: [dependencies]
+
+    - name: Uninstall KServe CRDs
+      kubernetes.core.helm:
+        name: kserve-crd
+        release_namespace: kserve
+        state: absent
+        wait: true
+      tags: [dependencies]
+
+    - name: Uninstall Envoy Gateway
+      kubernetes.core.helm:
+        name: eg
+        release_namespace: envoy-gateway-system
+        state: absent
+        wait: true
+      tags: [dependencies]
+
+    - name: Delete dependency namespaces
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ item }}"
+        wait: true
+        wait_timeout: 120
+      loop:
+        - kserve
+        - opentelemetry
+        - envoy-gateway-system
+      ignore_errors: true
+      tags: [dependencies]

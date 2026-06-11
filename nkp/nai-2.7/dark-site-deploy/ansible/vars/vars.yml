@@ -1,0 +1,9 @@
+---
+IMAGE_REGISTRY_URL: "registry.example.com"        # UPDATE: your private registry URL
+IMAGE_PULL_SECRET: "registry-image-pull-secret"
+PROJECT: "nutanix"                                # UPDATE: image path prefix in your registry
+NAI_DEFAULT_RWO_STORAGECLASS: "nutanix-volume"    # UPDATE: RWO storage class name
+NAI_API_RWX_STORAGECLASS: "nutanix-files"         # UPDATE: RWX storage class name
+NKP_WORKSPACE_NAMESPACE: "kommander"              # UPDATE: NKP workspace namespace
+cert_path: "/path/to/cert/fullchain.pem"           # UPDATE: path to TLS certificate
+key_path: "/path/to/cert/privkey.pem"              # UPDATE: path to TLS private key

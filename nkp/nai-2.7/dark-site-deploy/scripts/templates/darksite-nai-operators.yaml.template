@@ -1,0 +1,29 @@
+global:
+  imagePullSecrets:
+    - name: ${IMAGE_PULL_SECRET}
+
+naiRedis:
+  naiRedisImage:
+    name: ${REGISTRY}/${PROJECT}/nai-redis
+
+naiJobs:
+  naiJobsImage:
+    image: ${REGISTRY}/${PROJECT}/nai-jobs
+
+nai-clickhouse-operator:
+  operator:
+    image:
+      registry: ${REGISTRY}
+      repository: ${PROJECT}/nai-clickhouse-operator
+  metrics:
+    image:
+      registry: ${REGISTRY}
+      repository: ${PROJECT}/nai-clickhouse-metrics-exporter
+
+ai-gateway-helm:
+  extProc:
+    image:
+      repository: ${REGISTRY}/${PROJECT}/nai-ai-gateway-extproc
+  controller:
+    image:
+      repository: ${REGISTRY}/${PROJECT}/nai-ai-gateway-controller

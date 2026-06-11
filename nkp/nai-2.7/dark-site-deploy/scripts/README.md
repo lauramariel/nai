@@ -1,3 +1,13 @@
+# NAI 2.7 Dark Site Install
+
+There are two workflows available:
+- Pushing charts and images to private repo
+- Installing NAI
+
+If the charts and images are already available, skip to install section
+
+## Pushing charts and images to private repo
+
 Ideally done from a VM with at least 100GB of free space.
 
 1. Add contents of sample.env to your .env file and update to match your environment
@@ -55,4 +65,32 @@ Ideally done from a VM with at least 100GB of free space.
 
     ```
     bash 00-push-images.sh registry.nutanixdemo.com/bootcamps nutanix nai-v2.7.0.tar
+    ```
+
+# Installing NAI
+
+1. If not already done, add contents of sample.env to your .env file and update to match your environment
+    ```
+    cat sample.env >> .env
+    vi .env
+    ```
+
+2. Install dependencies
+
+    ```
+    bash 01-install-dependencies.sh
+    ```
+
+
+2. Install NAI Operators and Core
+
+    ```
+    bash 02-install-nai.sh
+    ```
+
+
+3. Post install activities
+
+    ```
+    bash 03-post-install.sh
     ```
