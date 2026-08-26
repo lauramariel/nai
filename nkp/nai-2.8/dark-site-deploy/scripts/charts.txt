@@ -1,0 +1,9 @@
+# Put the chart names here
+
+gateway-crds-helm-v1.7.0.tgz
+gateway-helm-v1.7.0.tgz
+kserve-crd-v0.15.0.tgz
+kserve-v0.15.0.tgz
+nai-core-2.7.0.tgz
+nai-operators-2.7.0.tgz
+opentelemetry-operator-0.102.0.tgz
