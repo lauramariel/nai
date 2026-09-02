@@ -22,13 +22,13 @@ Ideally done from a VM with at least 100GB of free space.
     ```
 
 3. Download airgapped bundle and charts from portal
-   1. NAI 2.7.0 Airgap Bundle
-   2. NAI 2.7.0 Helm Charts
+   1. NAI 2.8.0 Airgap Bundle
+   2. NAI 2.8.0 Helm Charts
 
     e.g.
     ```
-    wget -O nai-helm-charts-2.7.0.tar "$PORTAL_LINK"
-    wget -O nai-v2.7.0.tar "$PORTAL_LINK"
+    wget -O nai-helm-charts-2.8.0.tar "$PORTAL_LINK"
+    wget -O nai-v2.8.0.tar "$PORTAL_LINK"
     ```
 
     Replace `$PORTAL_LINK` with the short-lived URL obtained from the portal.
@@ -45,13 +45,13 @@ Ideally done from a VM with at least 100GB of free space.
 5. Untar the helm chart directory
 
     ```
-    mkdir nai-helm-charts-2.7.0 && tar -xvf nai-helm-charts-2.7.0.tar -C nai-helm-charts-2.7.0
+    mkdir nai-helm-charts-2.8.0 && tar -xvf nai-helm-charts-2.8.0.tar -C nai-helm-charts-2.8.0
     ```
 
 6. Put chart names in charts.txt
 
     ```
-    ls -l nai-helm-charts-2.7.0 | awk '{print $9}' | awk 'NF' > charts.txt
+    ls -l nai-helm-charts-2.8.0 | awk '{print $9}' | awk 'NF' > charts.txt
     ```
 
 7. Edit `00-push-charts.sh` with the path to the charts
@@ -61,10 +61,21 @@ Ideally done from a VM with at least 100GB of free space.
     bash 00-push-charts.sh
     ```
 
-9.  Push images to registry with `00-push-images.sh`
+9. Authenticate to registry using docker for images
 
     ```
-    bash 00-push-images.sh registry.nutanixdemo.com/bootcamps nutanix nai-v2.7.0.tar
+    echo "$REGISTRY_PASSWORD" | docker login ${IMAGE_REGISTRY_URL%%/*} -u $REGISTRY_USERNAME  --password-stdin
+    ```
+
+10. Push images to registry with `00-push-images.sh`
+
+    ```
+    bash 00-push-images.sh ${IMAGE_REGISTRY_URL} nutanix nai-v2.8.0.tar
+    ```
+
+11. Verifying if images are in registry
+    ```
+    bash 00-push-images.sh --verify ${IMAGE_REGISTRY_URL} nutanix nai-v2.8.0.tar
     ```
 
 # Installing NAI
@@ -81,15 +92,13 @@ Ideally done from a VM with at least 100GB of free space.
     bash 01-install-dependencies.sh
     ```
 
-
-2. Install NAI Operators and Core
+3. Install NAI Operators and Core
 
     ```
     bash 02-install-nai.sh
     ```
 
-
-3. Post install activities
+4. Post install activities (install cert)
 
     ```
     bash 03-post-install.sh
