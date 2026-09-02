@@ -2,7 +2,12 @@
 
 There are two workflows available:
 - Pushing charts and images to private repo
+  - 00-push-charts.sh
+  - 00-push-images.sh
 - Installing NAI
+  - 01-install-dependencies.sh
+  - 02-install-nai.sh
+  - 03-post-install.sh
 
 If the charts and images are already available, skip to install section
 
