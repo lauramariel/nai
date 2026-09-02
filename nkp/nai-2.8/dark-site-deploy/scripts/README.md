@@ -1,4 +1,4 @@
-# NAI 2.7 Dark Site Install
+# NAI 2.8 Dark Site Install
 
 There are two workflows available:
 - Pushing charts and images to private repo
