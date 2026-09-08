@@ -25,7 +25,7 @@ nai-clickhouse-operator:
 ai-gateway-helm:
   extProc:
     image:
-      repository: ${IMAGE_IMAGE_REGISTRY_URL_URL}/${PROJECT}/nai-ai-gateway-extproc
+      repository: ${IMAGE_REGISTRY_URL}/${PROJECT}/nai-ai-gateway-extproc
   controller:
     image:
       repository: ${IMAGE_REGISTRY_URL}/${PROJECT}/nai-ai-gateway-controller
