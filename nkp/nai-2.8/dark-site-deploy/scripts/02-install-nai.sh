@@ -17,12 +17,15 @@ helm upgrade --install nai-operators ./nai-operators-2.8.0.tgz \
   -n nai-system --create-namespace --wait --timeout 15m -f ./darksite-nai-operators.yaml
 
 # Wait until it's done installing
-# echo -n "Waiting for redis-standalone to be created in namespace nai-system"
-# until kubectl wait --for condition=ready pods -l app=redis-standalone -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
-# echo -n "Waiting for nai-clickhouse-operator to be created in namespace nai-system"
-# until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=nai-clickhouse-operator -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
+echo -n "Waiting for nai-operators to be created in namespace nai-system"
+until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=nai-operators -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
+echo -n "Waiting for nai-clickhouse-operator to be created in namespace nai-system"
+until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=nai-clickhouse-operator -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
+echo -n "Waiting for nai-db-iep-1 to be created in namespace nai-system"
+until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=postgresql  -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
 
-# Install nai-core with AI Gateway enabled
+
+# Install nai-core
 helm upgrade --install nai-core ./nai-core-2.8.0.tgz -n nai-system --create-namespace --wait --timeout 15m \
   --set "naiLabs.enabled=true" \
   -f ./darksite-nai-core.yaml

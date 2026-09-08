@@ -58,12 +58,17 @@ helm pull oci://$IMAGE_REGISTRY_URL/kserve-crd --version v0.19.0
 helm pull oci://$IMAGE_REGISTRY_URL/kserve-llmisvc-crd --version v0.19.0
 helm pull oci://$IMAGE_REGISTRY_URL/kserve-llmisvc-resources --version v0.19.0
 helm pull oci://$IMAGE_REGISTRY_URL/kserve-resources --version v0.19.0
+helm pull oci://$IMAGE_REGISTRY_URL/lws --version v0.8.0
 helm pull oci://$IMAGE_REGISTRY_URL/nai-core --version 2.8.0
 helm pull oci://$IMAGE_REGISTRY_URL/nai-operators --version 2.8.0
 helm pull oci://$IMAGE_REGISTRY_URL/opentelemetry-operator --version 0.114.1
 
 export REGISTRY="${IMAGE_REGISTRY_URL}" # to match template
 envsubst < templates/eg-config-for-gateway-mode.yaml.template > eg-config-for-gateway-mode.yaml
+
+# Print existing versions
+echo "## Existing versions"
+helm list -A | grep -E "NAMESPACE|envoy-gateway-system|kserve|opentelemetry|lws"
 
 # Install Envoy Gateway CRDs
 helm template eg ./gateway-crds-helm-v1.8.1.tgz \
@@ -104,16 +109,19 @@ helm upgrade --install kserve-llmisvc-resources ./kserve-llmisvc-resources-v0.19
 helm upgrade --install opentelemetry-operator ./opentelemetry-operator-0.114.1.tgz \
   -n opentelemetry --create-namespace --wait \
   --set manager.image.repository=${IMAGE_REGISTRY_URL}/${PROJECT}/nai-opentelemetry-operator \
-  --set manager.collectorImage.repository=${IMAGE_REGISTRY_URL}/${PROJECT}/nai-opentelemetry-collector-k8s \
-  --set kubeRBACProxy.image.repository=${IMAGE_REGISTRY_URL}/${PROJECT}/nai-kube-rbac-proxy \
-  --set imagePullSecrets[0].name=${IMAGE_PULL_SECRET}
+  --set manager.collectorImage.repository=${IMAGE_REGISTRY_URL}/${PROJECT}/nai-opentelemetry-collector-contrib \
+  --set "imagePullSecrets[0].name=${IMAGE_PULL_SECRET}"
 
-# Install CloudNative PG (not in airgapped bundle currently)
-helm install cnpg cloudnative-pg \
-  --repo https://cloudnative-pg.github.io/charts \
-  --version 0.28.0 -n cnpg-system --create-namespace --wait
+# Install CloudNative PG (should be done via NKP app catalog)
+# helm install cnpg cloudnative-pg \
+#   --repo https://cloudnative-pg.github.io/charts \
+#   --version 0.28.0 -n cnpg-system --create-namespace --wait
 
 # Install LeaderWorkerSet
-helm upgrade --install lws ./lws-0.8.0.tgz -n lws-system --create-namespace --wait \ 
---set "imagePullSecrets[0].name=${IMAGE_PULL_SECRET}" \ 
---set image.manager.repository=${IMAGE_REGISTRY_URL}/${PROJECT}/nai-lws 
+helm upgrade --install lws ./lws-v0.8.0.tgz \
+  -n lws-system --create-namespace --wait \
+  --set "imagePullSecrets[0].name=${IMAGE_PULL_SECRET}" \
+  --set image.manager.repository=${IMAGE_REGISTRY_URL}/${PROJECT}/nai-lws
+
+echo "## Updated versions"
+helm list -A | grep -E "NAMESPACE|envoy-gateway-system|kserve|opentelemetry|lws"

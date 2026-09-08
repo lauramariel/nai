@@ -8,8 +8,8 @@ source ~/.env
 until kubectl wait pod --all --for=condition=Ready --field-selector=status.phase!=Succeeded --namespace=nai-system; do sleep 2; done
 
 # Update paths based on where your cert and key are saved locally
-CERT_PATH="$HOME/certs/fullchain.pem"
-KEY_PATH="$HOME/certs/privkey.pem"
+CERT_PATH="$HOME/certs/tmelab/fullchain.pem"
+KEY_PATH="$HOME/certs/tmelab/privkey.pem"
 
 # Create secret and patch gateway with secret
 CERT_NAME="nai-cert"
