@@ -9,7 +9,7 @@ There are two workflows available:
   - 02-install-nai.sh
   - 03-post-install.sh
 
-If the charts and images are already available, skip to install section
+If the charts and images are already available, skip to [install](#installing-nai) section
 
 ## Pushing charts and images to private repo
 
