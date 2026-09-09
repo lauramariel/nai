@@ -1,0 +1,34 @@
+global:
+  imagePullSecrets:
+    - name: ${IMAGE_PULL_SECRET}
+  storage:
+    storageClassName: ${NAI_DEFAULT_RWO_STORAGECLASS}
+
+naiValkey:
+  image:
+    name: ${IMAGE_REGISTRY_URL}/${PROJECT}/nai-valkey
+
+naiJobs:
+  naiJobsImage:
+    image: ${IMAGE_REGISTRY_URL}/${PROJECT}/nai-jobs
+
+nai-clickhouse-operator:
+  operator:
+    image:
+      registry: ${IMAGE_REGISTRY_URL}
+      repository: ${PROJECT}/nai-clickhouse-operator
+  metrics:
+    image:
+      registry: ${IMAGE_REGISTRY_URL}
+      repository: ${PROJECT}/nai-clickhouse-metrics-exporter
+
+ai-gateway-helm:
+  extProc:
+    image:
+      repository: ${IMAGE_REGISTRY_URL}/${PROJECT}/nai-ai-gateway-extproc
+  controller:
+    image:
+      repository: ${IMAGE_REGISTRY_URL}/${PROJECT}/nai-ai-gateway-controller
+
+naiDatabase:
+  image: ${IMAGE_REGISTRY_URL}/${PROJECT}/nai-postgresql:17.10-standard-trixie

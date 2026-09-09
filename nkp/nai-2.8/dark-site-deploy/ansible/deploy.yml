@@ -1,0 +1,382 @@
+---
+- name: Deploy NAI on NKP (dark site)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - vars/vars.yml
+    - vars/secrets.yml
+
+
+  pre_tasks:
+
+    - name: Bootstrap pip if missing
+      ansible.builtin.shell: "{{ ansible_python_interpreter }} -m ensurepip --upgrade"
+      changed_when: false
+      tags: [always]
+
+    - name: Install required Python libraries
+      ansible.builtin.shell: "{{ ansible_python_interpreter }} -m pip install kubernetes"
+      changed_when: false
+      tags: [always]
+
+  tasks:
+
+    # ── Preflight checks ─────────────────────────────────────────────
+
+    - name: Check Prometheus Operator CRDs
+      kubernetes.core.k8s_info:
+        api_version: apiextensions.k8s.io/v1
+        kind: CustomResourceDefinition
+        name: "{{ item }}"
+      register: crd_check
+      loop:
+        - podmonitors.monitoring.coreos.com
+        - servicemonitors.monitoring.coreos.com
+      no_log: true
+      tags: [preflight]
+
+    - name: Summarize CRD check results
+      ansible.builtin.set_fact:
+        crd_summary: "{{ crd_summary | default([]) + [{'name': item.item, 'found': item.resources | length > 0}] }}"
+      loop: "{{ crd_check.results }}"
+      no_log: true
+      tags: [preflight]
+
+    - name: Assert Prometheus Operator CRDs are installed
+      ansible.builtin.assert:
+        that: item.found
+        fail_msg: "CRD {{ item.name }} not found — enable kube-prometheus-stack in Kommander before deploying"
+      loop: "{{ crd_summary }}"
+      tags: [preflight]
+
+    - name: Check required storage classes
+      kubernetes.core.k8s_info:
+        api_version: storage.k8s.io/v1
+        kind: StorageClass
+        name: "{{ item }}"
+      register: sc_check
+      loop:
+        - "{{ NAI_DEFAULT_RWO_STORAGECLASS }}"
+        - "{{ NAI_API_RWX_STORAGECLASS }}"
+      no_log: true
+      tags: [preflight]
+
+    - name: Summarize storage class check results
+      ansible.builtin.set_fact:
+        sc_summary: "{{ sc_summary | default([]) + [{'name': item.item, 'found': item.resources | length > 0}] }}"
+      loop: "{{ sc_check.results }}"
+      no_log: true
+      tags: [preflight]
+
+    - name: Assert required storage classes exist
+      ansible.builtin.assert:
+        that: item.found
+        fail_msg: "StorageClass {{ item.name }} not found — check NAI_DEFAULT_RWO_STORAGECLASS and NAI_API_RWX_STORAGECLASS in vars.yml"
+      loop: "{{ sc_summary }}"
+      tags: [preflight]
+
+    # ── 01: Install dependencies ─────────────────────────────────────
+
+    - name: Create namespaces
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ item }}"
+      loop:
+        - envoy-gateway-system
+        - kserve
+        - opentelemetry
+      tags: [dependencies]
+
+    - name: Create image pull secrets
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ IMAGE_PULL_SECRET }}"
+            namespace: "{{ item }}"
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: >-
+              {{ {'auths': {IMAGE_REGISTRY_URL: {'username': REGISTRY_USERNAME, 'password': REGISTRY_PASSWORD, 'email': REGISTRY_EMAIL}}} | to_json | b64encode }}
+      loop:
+        - envoy-gateway-system
+        - kserve
+        - opentelemetry
+      tags: [dependencies]
+
+    - name: Pull Helm charts from OCI registry
+      ansible.builtin.shell: |
+        helm pull oci://{{ IMAGE_REGISTRY_URL }}/{{ item.name }} --version {{ item.version }}
+      args:
+        chdir: "{{ playbook_dir }}"
+        creates: "{{ playbook_dir }}/{{ item.name }}-{{ item.version }}.tgz"
+      loop:
+        - { name: gateway-crds-helm,      version: v1.7.0 }
+        - { name: gateway-helm,           version: v1.7.0 }
+        - { name: kserve-crd,             version: v0.15.0 }
+        - { name: kserve,                 version: v0.15.0 }
+        - { name: nai-core,               version: 2.7.0 }
+        - { name: nai-operators,          version: 2.7.0 }
+        - { name: opentelemetry-operator, version: 0.102.0 }
+      tags: [dependencies]
+
+    - name: Render eg-config template
+      ansible.builtin.shell: |
+        envsubst < templates/eg-config-for-gateway-mode.yaml.template > eg-config-for-gateway-mode.yaml
+      args:
+        chdir: "{{ playbook_dir }}"
+      environment:
+        REGISTRY: "{{ IMAGE_REGISTRY_URL }}"
+        PROJECT: "{{ PROJECT }}"
+      tags: [dependencies]
+
+    - name: Install Envoy Gateway CRDs (server-side apply)
+      ansible.builtin.shell: |
+        helm template eg ./gateway-crds-helm-v1.7.0.tgz \
+          --set crds.gatewayAPI.enabled=true \
+          --set crds.envoyGateway.enabled=true \
+          | kubectl apply --server-side --force-conflicts -f -
+      args:
+        chdir: "{{ playbook_dir }}"
+      changed_when: true
+      tags: [dependencies]
+
+    - name: Install Envoy Gateway
+      kubernetes.core.helm:
+        name: eg
+        chart_ref: "{{ playbook_dir }}/gateway-helm-v1.7.0.tgz"
+        release_namespace: envoy-gateway-system
+        create_namespace: true
+        wait: true
+        values:
+          global:
+            images:
+              envoyGateway:
+                image: "{{ IMAGE_REGISTRY_URL }}/nutanix/nai-gateway:v1.7.0"
+              ratelimit:
+                image: "{{ IMAGE_REGISTRY_URL }}/nutanix/nai-ratelimit:99d85510"
+            imagePullSecrets:
+              - name: "{{ IMAGE_PULL_SECRET }}"
+        values_files:
+          - "{{ playbook_dir }}/eg-config-for-gateway-mode.yaml"
+      tags: [dependencies]
+
+    - name: Install KServe CRDs
+      kubernetes.core.helm:
+        name: kserve-crd
+        chart_ref: "{{ playbook_dir }}/kserve-crd-v0.15.0.tgz"
+        release_namespace: kserve
+        create_namespace: true
+        wait: true
+      tags: [dependencies]
+
+    - name: Install KServe
+      kubernetes.core.helm:
+        name: kserve
+        chart_ref: "{{ playbook_dir }}/kserve-v0.15.0.tgz"
+        release_namespace: kserve
+        wait: true
+        values:
+          kserve:
+            controller:
+              deploymentMode: RawDeployment
+              gateway:
+                disableIngressCreation: true
+              image: "{{ IMAGE_REGISTRY_URL }}/nutanix/nai-kserve-controller"
+              rbacProxyImage: "{{ IMAGE_REGISTRY_URL }}/nutanix/nai-kube-rbac-proxy:v0.18.0"
+              imagePullSecrets:
+                - name: "{{ IMAGE_PULL_SECRET }}"
+      tags: [dependencies]
+
+    - name: Install OpenTelemetry Operator
+      kubernetes.core.helm:
+        name: opentelemetry-operator
+        chart_ref: "{{ playbook_dir }}/opentelemetry-operator-0.102.0.tgz"
+        release_namespace: opentelemetry
+        create_namespace: true
+        wait: true
+        values:
+          manager:
+            image:
+              repository: "{{ IMAGE_REGISTRY_URL }}/nutanix/nai-opentelemetry-operator"
+            collectorImage:
+              repository: "{{ IMAGE_REGISTRY_URL }}/nutanix/nai-opentelemetry-collector-k8s"
+          kubeRBACProxy:
+            image:
+              repository: "{{ IMAGE_REGISTRY_URL }}/nutanix/nai-kube-rbac-proxy"
+          imagePullSecrets:
+            - name: "{{ IMAGE_PULL_SECRET }}"
+      tags: [dependencies]
+
+    # ── 02: Install NAI ──────────────────────────────────────────────
+
+    - name: Wait for KServe controller to be ready
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: kserve
+        label_selectors:
+          - app.kubernetes.io/name=kserve-controller-manager
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      tags: [install]
+
+    - name: Create nai-system namespace
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: nai-system
+      tags: [install]
+
+    - name: Create image pull secret in nai-system
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ IMAGE_PULL_SECRET }}"
+            namespace: nai-system
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: >-
+              {{ {'auths': {IMAGE_REGISTRY_URL: {'username': REGISTRY_USERNAME, 'password': REGISTRY_PASSWORD, 'email': REGISTRY_EMAIL}}} | to_json | b64encode }}
+      tags: [install]
+
+    - name: Render nai-operators values template
+      ansible.builtin.shell: |
+        envsubst < templates/darksite-nai-operators.yaml.template > darksite-nai-operators.yaml
+      args:
+        chdir: "{{ playbook_dir }}"
+      environment:
+        REGISTRY: "{{ IMAGE_REGISTRY_URL }}"
+        PROJECT: "{{ PROJECT }}"
+        IMAGE_PULL_SECRET: "{{ IMAGE_PULL_SECRET }}"
+      tags: [install]
+
+    - name: Render nai-core values template
+      ansible.builtin.shell: |
+        envsubst < templates/darksite-nai-core.yaml.template > darksite-nai-core.yaml
+      args:
+        chdir: "{{ playbook_dir }}"
+      environment:
+        REGISTRY: "{{ IMAGE_REGISTRY_URL }}"
+        PROJECT: "{{ PROJECT }}"
+        IMAGE_PULL_SECRET: "{{ IMAGE_PULL_SECRET }}"
+        NAI_DEFAULT_RWO_STORAGECLASS: "{{ NAI_DEFAULT_RWO_STORAGECLASS }}"
+        NAI_API_RWX_STORAGECLASS: "{{ NAI_API_RWX_STORAGECLASS }}"
+        NKP_WORKSPACE_NAMESPACE: "{{ NKP_WORKSPACE_NAMESPACE }}"
+      tags: [install]
+
+    - name: Install nai-operators
+      ansible.builtin.shell: |
+        helm upgrade --install nai-operators ./nai-operators-2.7.0.tgz \
+          --version=2.7.0 \
+          -n nai-system --create-namespace --wait \
+          --set "naiAIGateway.enabled=true" \
+          --insecure-skip-tls-verify \
+          -f ./darksite-nai-operators.yaml
+      args:
+        chdir: "{{ playbook_dir }}"
+      changed_when: true
+      tags: [install]
+
+    - name: Wait for redis-standalone
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: nai-system
+        label_selectors:
+          - app=redis-standalone
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      tags: [install]
+
+    - name: Wait for clickhouse-operator
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: nai-system
+        label_selectors:
+          - app.kubernetes.io/name=nai-clickhouse-operator
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      tags: [install]
+
+    - name: Install nai-core
+      ansible.builtin.shell: |
+        helm upgrade --install nai-core ./nai-core-2.7.0.tgz \
+          --version=2.7.0 \
+          -n nai-system --create-namespace --wait \
+          --set "naiAIGateway.enabled=true" \
+          --set "naiLabs.enabled=true" \
+          --insecure-skip-tls-verify \
+          -f ./darksite-nai-core.yaml
+      args:
+        chdir: "{{ playbook_dir }}"
+      changed_when: true
+      tags: [install]
+
+    # ── 03: Post-install ─────────────────────────────────────────────
+
+    - name: Wait for all nai-system pods to be ready
+      ansible.builtin.shell: |
+        kubectl wait pod --all \
+          --for=condition=Ready \
+          --field-selector=status.phase!=Succeeded \
+          --namespace=nai-system \
+          --timeout=600s
+      changed_when: false
+      tags: [post-install]
+
+    - name: Read TLS certificate
+      ansible.builtin.slurp:
+        src: "{{ cert_path }}"
+      register: tls_cert
+      tags: [post-install]
+
+    - name: Read TLS key
+      ansible.builtin.slurp:
+        src: "{{ key_path }}"
+      register: tls_key
+      tags: [post-install]
+
+    - name: Create TLS secret
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: nai-cert
+            namespace: nai-system
+          type: kubernetes.io/tls
+          data:
+            tls.crt: "{{ tls_cert.content }}"
+            tls.key: "{{ tls_key.content }}"
+      tags: [post-install]
+
+    - name: Patch gateway with TLS cert
+      ansible.builtin.shell: |
+        kubectl patch gateway nai-ingress-gateway -n nai-system \
+          --type='json' \
+          -p='[{"op": "replace", "path": "/spec/listeners/1/tls/certificateRefs/0/name", "value": "nai-cert"}]'
+      changed_when: true
+      tags: [post-install]

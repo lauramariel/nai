@@ -1,0 +1,58 @@
+# This file configures Envoy Gateway for AI Gateway mode with rate limiting
+
+config:
+  envoyGateway:
+    gateway:
+      controllerName: "gateway.envoyproxy.io/gatewayclass-controller"
+    logging:
+      level:
+        default: "info"
+    provider:
+      kubernetes:
+        rateLimitDeployment:
+          container:
+            image: "${REGISTRY}/${PROJECT}/nai-ratelimit:99d85510"
+          patch:
+            type: "StrategicMerge"
+            value:
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - imagePullPolicy: "IfNotPresent"
+                        name: "envoy-ratelimit"
+                        image: "${REGISTRY}/${PROJECT}/nai-ratelimit:99d85510"
+      type: "Kubernetes"
+    extensionApis:
+      enableEnvoyPatchPolicy: true
+      enableBackend: true
+    extensionManager:
+      maxMessageSize: 11Mi
+      backendResources:
+        - group: inference.networking.k8s.io
+          kind: InferencePool
+          version: v1
+      hooks:
+        xdsTranslator:
+          translation:
+            listener:
+              includeAll: true
+            route:
+              includeAll: true
+            cluster:
+              includeAll: true
+            secret:
+              includeAll: true
+          post:
+            - "Translation"
+            - "Cluster"
+            - "Route"
+      service:
+        fqdn:
+          hostname: "ai-gateway-controller.nai-system.svc.cluster.local"
+          port: 1063
+    rateLimit:
+      backend:
+        type: "Redis"
+        redis:
+          url: "redis-sentinel.nai-system.svc.cluster.local:6379"

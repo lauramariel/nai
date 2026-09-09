@@ -1,0 +1,55 @@
+---
+- name: Set up storage prerequisites for NAI
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - vars/setup-vars.yml
+    - vars/secrets.yml
+
+  tasks:
+
+    - name: Create ntnx-system namespace
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: ntnx-system
+
+    - name: Create Nutanix CSI credentials secret
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: nutanix-csi-credentials-files
+            namespace: ntnx-system
+          stringData:
+            key: "{{ PE_CREDS_STRING }}"
+            files-key: "{{ FILES_CREDS_STRING }}"
+
+    - name: Create RWX storage class (Nutanix Files)
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          kind: StorageClass
+          apiVersion: storage.k8s.io/v1
+          metadata:
+            name: "{{ NAI_API_RWX_STORAGECLASS }}"
+          provisioner: csi.nutanix.com
+          parameters:
+            dynamicProv: ENABLED
+            nfsServerName: "{{ NFS_SERVER_NAME }}"
+            nfsServer: "{{ NFS_SERVER_FQDN }}"
+            csi.storage.k8s.io/provisioner-secret-name: nutanix-csi-credentials-files
+            csi.storage.k8s.io/provisioner-secret-namespace: ntnx-system
+            csi.storage.k8s.io/node-publish-secret-name: nutanix-csi-credentials-files
+            csi.storage.k8s.io/node-publish-secret-namespace: ntnx-system
+            csi.storage.k8s.io/controller-expand-secret-name: nutanix-csi-credentials-files
+            csi.storage.k8s.io/controller-expand-secret-namespace: ntnx-system
+            storageType: NutanixFiles
+          allowVolumeExpansion: true
