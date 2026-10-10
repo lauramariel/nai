@@ -24,7 +24,7 @@ until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=nai-clic
 echo -n "Waiting for nai-db-iep-1 to be created in namespace nai-system"
 until kubectl wait --for condition=ready pods -l app.kubernetes.io/name=postgresql  -n nai-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
 echo -n "Waiting for envoy to be created in namespace envoy-gateway-system"
-until kubectl wait --for condition=ready pods -l serving.kserve.io/gateway=nai-ingress-gateway  -n envoy-gateway-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
+until kubectl wait --for condition=ready pods -l control-plane=envoy-gateway  -n envoy-gateway-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
 
 # Install nai-core
 helm upgrade --install nai-core ./nai-core-2.8.0.tgz -n nai-system --create-namespace --wait --timeout 15m \
