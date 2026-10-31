@@ -14,7 +14,7 @@
 #   ./push-images-to-registry.sh <registry-url> <project> <tar-file>
 #
 # Example:
-#   ./push-images-to-registry.sh registry.example.com nutanix nai-images-2.8.0.tar
+#   ./push-images-to-registry.sh registry.example.com nutanix nai-images-2.8.1.tar
 #
 
 set -uo pipefail
@@ -69,7 +69,7 @@ verify_images_uploaded() {
         total=$((total + 1))
 
         # For verification, we need to check the target image name
-        # Format: nutanix/nai-api:v2.8.0 → registry.example.com/<project>/nai-api:v2.8.0
+        # Format: nutanix/nai-api:v2.8.1 → registry.example.com/<project>/nai-api:v2.8.1
         if [[ "$image_ref" =~ ^nutanix/(.+)$ ]]; then
             local image_path="${BASH_REMATCH[1]}"
             local target_image="${registry}/${project}/${image_path}"
@@ -177,8 +177,8 @@ if [ $# -ne 3 ]; then
     echo "  tar-file        Path to the NAI images tar bundle"
     echo ""
     echo "Examples:"
-    echo "  $0 registry.example.com nutanix nai-images-2.8.0.tar"
-    echo "  $0 --verify registry.example.com nutanix nai-images-2.8.0.tar"
+    echo "  $0 registry.example.com nutanix nai-images-2.8.1.tar"
+    echo "  $0 --verify registry.example.com nutanix nai-images-2.8.1.tar"
     echo ""
     exit 1
 fi
@@ -300,7 +300,7 @@ for source_image in "${LOADED_IMAGES[@]}"; do
     print_info "[$((PUSHED_COUNT + 1))/$TOTAL_IMAGES] Processing: $source_image"
     
     # Retag image for target registry
-    # Format: nutanix/nai-api:v2.8.0 → registry.example.com/<project>/nai-api:v2.8.0
+    # Format: nutanix/nai-api:v2.8.1 → registry.example.com/<project>/nai-api:v2.8.1
     if [[ "$source_image" =~ ^nutanix/(.+)$ ]]; then
         image_path="${BASH_REMATCH[1]}"
         target_image="${REGISTRY}/${PROJECT}/${image_path}"

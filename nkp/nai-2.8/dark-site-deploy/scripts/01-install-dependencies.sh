@@ -59,8 +59,8 @@ helm pull oci://$IMAGE_REGISTRY_URL/kserve-llmisvc-crd --version v0.19.0
 helm pull oci://$IMAGE_REGISTRY_URL/kserve-llmisvc-resources --version v0.19.0
 helm pull oci://$IMAGE_REGISTRY_URL/kserve-resources --version v0.19.0
 helm pull oci://$IMAGE_REGISTRY_URL/lws --version v0.8.0
-helm pull oci://$IMAGE_REGISTRY_URL/nai-core --version 2.8.0
-helm pull oci://$IMAGE_REGISTRY_URL/nai-operators --version 2.8.0
+helm pull oci://$IMAGE_REGISTRY_URL/nai-core --version 2.8.1
+helm pull oci://$IMAGE_REGISTRY_URL/nai-operators --version 2.8.1
 helm pull oci://$IMAGE_REGISTRY_URL/opentelemetry-operator --version 0.114.1
 
 export REGISTRY="${IMAGE_REGISTRY_URL}" # to match template

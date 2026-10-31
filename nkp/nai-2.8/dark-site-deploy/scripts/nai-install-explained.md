@@ -61,8 +61,8 @@ pulls from the registry):
 ```
 gateway-crds-helm-v1.8.1.tgz          opentelemetry-operator-0.114.1.tgz
 gateway-helm-v1.8.1.tgz               lws-v0.8.0.tgz
-kserve-crd-v0.19.0.tgz                nai-operators-2.8.0.tgz
-kserve-llmisvc-crd-v0.19.0.tgz        nai-core-2.8.0.tgz
+kserve-crd-v0.19.0.tgz                nai-operators-2.8.1.tgz
+kserve-llmisvc-crd-v0.19.0.tgz        nai-core-2.8.1.tgz
 kserve-llmisvc-resources-v0.19.0.tgz
 kserve-resources-v0.19.0.tgz
 ```

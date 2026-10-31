@@ -27,13 +27,13 @@ Ideally done from a VM with at least 100GB of free space.
     ```
 
 3. Download airgapped bundle and charts from portal
-   1. NAI 2.8.0 Airgap Bundle
-   2. NAI 2.8.0 Helm Charts
+   1. NAI 2.8.1 Airgap Bundle
+   2. NAI 2.8.1 Helm Charts
 
     e.g.
     ```
-    wget -O nai-helm-charts-2.8.0.tar "$PORTAL_LINK"
-    wget -O nai-v2.8.0.tar "$PORTAL_LINK"
+    wget -O nai-helm-charts-2.8.1.tar "$PORTAL_LINK"
+    wget -O nai-v2.8.1.tar "$PORTAL_LINK"
     ```
 
     Replace `$PORTAL_LINK` with the short-lived URL obtained from the portal.
@@ -50,13 +50,13 @@ Ideally done from a VM with at least 100GB of free space.
 5. Untar the helm chart directory
 
     ```
-    mkdir nai-helm-charts-2.8.0 && tar -xvf nai-helm-charts-2.8.0.tar -C nai-helm-charts-2.8.0
+    mkdir nai-helm-charts-2.8.1 && tar -xvf nai-helm-charts-2.8.1.tar -C nai-helm-charts-2.8.1
     ```
 
 6. Put chart names in charts.txt
 
     ```
-    ls -l nai-helm-charts-2.8.0 | awk '{print $9}' | awk 'NF' > charts.txt
+    ls -l nai-helm-charts-2.8.1 | awk '{print $9}' | awk 'NF' > charts.txt
     ```
 
 7. Edit `00-push-charts.sh` with the path to the charts
@@ -75,12 +75,12 @@ Ideally done from a VM with at least 100GB of free space.
 10. Push images to registry with `00-push-images.sh`
 
     ```
-    bash 00-push-images.sh ${IMAGE_REGISTRY_URL} nutanix nai-v2.8.0.tar
+    bash 00-push-images.sh ${IMAGE_REGISTRY_URL} nutanix nai-v2.8.1.tar
     ```
 
 11. Verifying if images are in registry
     ```
-    bash 00-push-images.sh --verify ${IMAGE_REGISTRY_URL} nutanix nai-v2.8.0.tar
+    bash 00-push-images.sh --verify ${IMAGE_REGISTRY_URL} nutanix nai-v2.8.1.tar
     ```
 
 # Installing NAI

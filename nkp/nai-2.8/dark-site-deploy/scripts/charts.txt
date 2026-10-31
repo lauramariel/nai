@@ -7,6 +7,6 @@ kserve-llmisvc-crd-v0.19.0.tgz
 kserve-llmisvc-resources-v0.19.0.tgz
 kserve-resources-v0.19.0.tgz
 lws-0.8.0.tgz
-nai-core-2.8.0.tgz
-nai-operators-2.8.0.tgz
+nai-core-2.8.1.tgz
+nai-operators-2.8.1.tgz
 opentelemetry-operator-0.114.1.tgz

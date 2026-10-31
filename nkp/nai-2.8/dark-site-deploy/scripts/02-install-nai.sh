@@ -13,7 +13,7 @@ envsubst < templates/darksite-nai-operators.yaml.template > darksite-nai-operato
 envsubst < templates/darksite-nai-core.yaml.template > darksite-nai-core.yaml
 
 # Install nai-operators
-helm upgrade --install nai-operators ./nai-operators-2.8.0.tgz \
+helm upgrade --install nai-operators ./nai-operators-2.8.1.tgz \
   -n nai-system --create-namespace --wait --timeout 15m -f ./darksite-nai-operators.yaml
 
 # Wait until it's done installing and everything is up and running
@@ -27,7 +27,7 @@ echo -n "Waiting for envoy to be created in namespace envoy-gateway-system"
 until kubectl wait --for condition=ready pods -l control-plane=envoy-gateway  -n envoy-gateway-system >/dev/null 2>&1; do echo -n "."; sleep 2; done; echo " Done"
 
 # Install nai-core
-helm upgrade --install nai-core ./nai-core-2.8.0.tgz -n nai-system --create-namespace --wait --timeout 15m \
+helm upgrade --install nai-core ./nai-core-2.8.1.tgz -n nai-system --create-namespace --wait --timeout 15m \
   --set "naiLabs.enabled=true" \
   -f ./darksite-nai-core.yaml
 
